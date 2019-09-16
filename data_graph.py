@@ -13,6 +13,8 @@ for i, (conc, glucose) in enumerate([(conc7, glucose7), (conc9, glucose9)]):
     plt.subplot(2, 4, 4*i + 1)
     plt.plot(glucose['Time'], glucose['Glucose dosing (g/h)'])
     plt.title("Glucose feed (g/h)")
+    number = 7 if i == 0 else 9
+    plt.ylabel(f"Experiment {number}")
 
     for j, name in enumerate(["Glucose", "Fumaric", "Ethanol"]):
         plt.subplot(2, 4, 4*i + j + 2)
