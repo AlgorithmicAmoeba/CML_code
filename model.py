@@ -22,27 +22,32 @@ class Model:
         Cco, Co = [N/Vg for N in [Nco, No]]
 
         # Rate equations:
-        # 1) rG = a * Cg
-        # 2) rX = b * Cn
-        # 3) rFA = c * rE
-        # 4) rG = rPyr + (1 + alpha)*rX
-        # 5) rPyr = 0.75*rFA  + rCO + 1.5*rE
-        # 6) 1/3*rPyr + 1/3*rCO + 2*PO*rO - gamma*rX - 0.25*rFA = theta : ATP
-        # 7) 0.25*rFA + 0.5*rE + 2*rO - beta*rX - 1/3*rPyr - 5/3*rCO = 0 : NADH
-        # Unkowns: rG, rX, rFA, rE, rPyr, rCO, rO (7)
+        # 1) glucose + CO2 + 3*ATP --> 2*FA + 2*water
+        # 2) glucose --> 6*CO2 + 12*NADH + 4*ATP (TCA)
+        # 3) NADH + 0.5*O2 -> 7/3 ATP (Respiration)
+        # 4) glucose -> 2*ethanol + 2*CO2 + 2*ATP
+        # 5) glucose + gamma*ATP --> 6*biomass + beta*NADH
+        # Unkowns: rFAp, rTCA, rResp, rEp, rXp (5)
 
-        rate_matrix = numpy.array([[0, 0, 1, 0, 0, 0, 0],
-                                   [0, 1, 0, 0, 0, 0, 0],
-                                   [0, 0, 0, 0, 0, 1, 0],
-                                   [-1, 1 + alpha, 0, 0, 1, 0, 0],
-                                   [0, 0, 0.75, 1.5, -1, 1, 0],
-                                   [0, -gamma, -0.25, 0, 1/3, 1/3, 2*PO],
-                                   [0, beta, -0.25, -0.5, 1/3, 5/3, -2]])
-        rFA_calc = 0.001429825802986 * 1.35  # (Cg / (1e-3 + Cg))
-        RHS = [rFA_calc, b*Cn, 0, 0, 0, theta, 0]
+        rate_matrix = numpy.array([[1, 0, 0, 0, 0],
+                                   [0, 0, 0, 1, 0],
+                                   [0, 0, 0, 0, 1],
+                                   [-3, 4, 7/3, 2, gamma],
+                                   [0, 12, -1, 0, beta]])
+        rFA_calc = 0.001429825802986 * (Cg / (1e-3 + Cg))
+        rE_calc = 0.001429825802986 * 0.5 * 0.1 # issues with this equation
+        RHS = [rFA_calc, rE_calc, 0, theta, 0]
 
-        rG, rX, rFA, rE, rPyr, rCO, rO = numpy.linalg.inv(rate_matrix) @ RHS
-        print(rG, rX, rFA, rE, rPyr, rCO, rO)
+        rFAp, rTCA, rResp, rEp, rXp = numpy.linalg.inv(rate_matrix) @ RHS
+        print(rFAp, rTCA, rResp, rEp, rXp)
+
+        rG = -rFAp - rTCA - rEp - rXp
+        rX = 6*rXp
+        rFA = 2*rFAp
+        rE = 2*rEp
+        rCO = -2*rFAp + 6*rTCA + 2*rEp + alpha*rXp
+        rO = -0.5*rResp
+
         # pH calculations
         # Kna, Kfa = 10 ** (14 - 0.2), 10 ** 3.03
         # Ch = Cfa_m - Coh
@@ -55,7 +60,7 @@ class Model:
         # pH = -numpy.log10(Ch)
 
         # DE's
-        dNg = Fg_in*Cg_in - Fout*Cg - 6*rG*Cx*V
+        dNg = Fg_in*Cg_in - Fout*Cg + 6*rG*Cx*V
         dNx = rX*Cx*V
         dNfa = -Fout*Cfa + 4*rFA*Cx*V
         dNe = -Fout*Ce + 2*rE*Cx*V
