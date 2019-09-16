@@ -8,7 +8,6 @@ def inputs(t):
 
     Cg_in = 314.19206 / 180  # (g/L) / (g/mol) = mol/L
     Fg_in = CgFg(t) / 180 / Cg_in  # (g/h) / (g/mol) / (mol/L) = L/h
-    Cg_in *= 1
 
     Qco_in = 8.67 / 1000 * 60  # (ml / min) / (ml/L) * (min/h) = L/h
     Fco_in = 87 * Qco_in / 8.314 / 298  # (kPa) * (L/h) / (L*kPa/mol/K) / (K) = mol/h
@@ -29,7 +28,6 @@ def inputs(t):
 
     Fm_in = 0
     Fout = Fg_in + Fn_in + Fb_in + Fm_in
-    Fout *= 0
 
     Tamb = 25
     Q = 5 / 9
