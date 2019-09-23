@@ -32,7 +32,7 @@ class Model:
                                    [-3, 4, 7/3, 2, gamma],
                                    [0, 12, -1, 0, beta]])
         rFA_calc = 0.001429825802986 * (Cg / (1e-3 + Cg))
-        rE_calc = 0.001429825802986 * 0.5 * 0.1 # issues with this equation
+        rE_calc = 0.001429825802986 * 0.5
         RHS = [rFA_calc, rE_calc, 0, theta, 0]
 
         rFAp, rTCA, rResp, rEp, rXp = numpy.linalg.inv(rate_matrix) @ RHS
@@ -60,13 +60,13 @@ class Model:
         # DE's
         dNg = Fg_in*Cg_in - Fout*Cg + 6*rG*Cx*V
         dNx = rX*Cx*V
-        dNfa = -Fout*Cfa + 4*rFA*Cx*V #+ rZ*Cx*V
-        dNe = -Fout*Ce + 2*rE*Cx*V #- rZ*Cx*V
+        dNfa = -Fout*Cfa + 4*rFA*Cx*V + (116/46)*rZ*Cx*V
+        dNe = -Fout*Ce + 2*rE*Cx*V - rZ*Cx*V
         dNco = Fco_in*Cco_in - Fg_out*Cco + rCO*Cx*V
         dNo = Fo_in*Co_in - Fg_out*Co - rO*Cx*V
         dNn = Fn_in*Cn_in - Fout*Cn - delta*rX*Cx*V
         dNb = Fb_in*Cb_in - Fout*Cb
-        dNz = -2*rZ*Cx*V
+        dNz = -8*rZ*Cx*V
         dV = Fg_in + Fn_in + Fb_in + Fm_in - Fout
         dVg = Fco_in + Fo_in - Fg_out
 
