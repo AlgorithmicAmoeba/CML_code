@@ -7,18 +7,15 @@ class Model:
         pass
 
     def DEs(self, X, t, inputs):
-        Ng, Nx, Nfa, Ne, Nco, No, Nn, Nb, V, Vg = [max(0, N) for N in X]
+        Ng, Nx, Nfa, Ne, Nco, No, Nn, Nb, Nz, V, Vg = [max(0, N) for N in X]
         Fg_in, Cg_in, Fco_in, Cco_in, Fo_in, Co_in, \
             Fg_out, Cn_in, Fn_in, Fb_in, Cb_in, Fm_in, Fout, Tamb, Q = inputs(t)
-        a, b, c = 1, 0, 10
-        # a: how much does Cg affect rG
-        # b: how much does Cn affect rX
-        # c: ratio of rFA to rE: rFA = c*rE
+
         alpha, PO, gamma, theta, beta = 0.1, 1.5, 1.8, 0.0001, 0.1
         delta = 0.2
 
         # Concentrations
-        Cg, Cx, Cfa, Ce, Cn, Cb = [N/V for N in [Ng, Nx, Nfa, Ne, Nn, Nb]]
+        Cg, Cx, Cfa, Ce, Cn, Cb, Cz = [N/V for N in [Ng, Nx, Nfa, Ne, Nn, Nb, Nz]]
         Cco, Co = [N/Vg for N in [Nco, No]]
 
         # Rate equations:
@@ -47,6 +44,7 @@ class Model:
         rE = 2*rEp
         rCO = -2*rFAp + 6*rTCA + 2*rEp + alpha*rXp
         rO = -0.5*rResp
+        rZ = 1*Ce*Cz
 
         # pH calculations
         # Kna, Kfa = 10 ** (14 - 0.2), 10 ** 3.03
@@ -62,16 +60,17 @@ class Model:
         # DE's
         dNg = Fg_in*Cg_in - Fout*Cg + 6*rG*Cx*V
         dNx = rX*Cx*V
-        dNfa = -Fout*Cfa + 4*rFA*Cx*V
-        dNe = -Fout*Ce + 2*rE*Cx*V
+        dNfa = -Fout*Cfa + 4*rFA*Cx*V #+ rZ*Cx*V
+        dNe = -Fout*Ce + 2*rE*Cx*V #- rZ*Cx*V
         dNco = Fco_in*Cco_in - Fg_out*Cco + rCO*Cx*V
         dNo = Fo_in*Co_in - Fg_out*Co - rO*Cx*V
         dNn = Fn_in*Cn_in - Fout*Cn - delta*rX*Cx*V
         dNb = Fb_in*Cb_in - Fout*Cb
+        dNz = -2*rZ*Cx*V
         dV = Fg_in + Fn_in + Fb_in + Fm_in - Fout
         dVg = Fco_in + Fo_in - Fg_out
 
-        return dNg, dNx, dNfa, dNe, dNco, dNo, dNn, dNb, dV, dVg
+        return dNg, dNx, dNfa, dNe, dNco, dNo, dNn, dNb, dNz, dV, dVg
 
     def step(self, inputs, dt):
         """
