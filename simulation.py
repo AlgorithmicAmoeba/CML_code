@@ -70,17 +70,21 @@ plt.figure(figsize=(20, 20))
 plt.subplot(2, 2, 1)
 plt.plot(ts, Cgs)
 plt.plot(conc['Time'], conc['Glucose'], '.')
+plt.title("Glucose")
 
 plt.subplot(2, 2, 2)
 plt.plot(ts, Cfas)
 plt.plot(conc['Time'], conc['Fumaric'], '.')
+plt.title("Fumaric")
 
 plt.subplot(2, 2, 3)
 plt.plot(ts, Ces)
 plt.plot(conc['Time'], conc['Ethanol'], '.')
+plt.title("Ethanol")
 
 plt.subplot(2, 2, 4)
 plt.plot(ts, Ccs)
+plt.title("Carbon dioxide")
 
 plt.show()
 
