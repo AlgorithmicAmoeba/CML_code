@@ -7,7 +7,7 @@ class Model:
         pass
 
     def DEs(self, X, t, inputs):
-        Ng, Nx, Nfa, Ne, Nco, No, Nn, Nb, Nz, V, Vg = [max(0, N) for N in X]
+        Ng, Nx, Nfa, Ne, Nco, No, Nn, Nb, Nz, Ny, V, Vg = [max(0, N) for N in X]
         Fg_in, Cg_in, Fco_in, Cco_in, Fo_in, Co_in, \
             Fg_out, Cn_in, Fn_in, Fb_in, Cb_in, Fm_in, Fout, Tamb, Q = inputs(t)
 
@@ -15,7 +15,7 @@ class Model:
         delta = 0.2
 
         # Concentrations
-        Cg, Cx, Cfa, Ce, Cn, Cb, Cz = [N/V for N in [Ng, Nx, Nfa, Ne, Nn, Nb, Nz]]
+        Cg, Cx, Cfa, Ce, Cn, Cb, Cz, Cy = [N/V for N in [Ng, Nx, Nfa, Ne, Nn, Nb, Nz, Ny]]
         Cco, Co = [N/Vg for N in [Nco, No]]
 
         # Rate equations:
@@ -45,6 +45,7 @@ class Model:
         rCO = -2*rFAp + 6*rTCA + 2*rEp + alpha*rXp
         rO = -0.5*rResp
         rZ = 1*Ce*Cz
+        rY = 1*Ce*Cy
 
         # pH calculations
         # Kna, Kfa = 10 ** (14 - 0.2), 10 ** 3.03
@@ -67,10 +68,11 @@ class Model:
         dNn = Fn_in*Cn_in - Fout*Cn - delta*rX*Cx*V
         dNb = Fb_in*Cb_in - Fout*Cb
         dNz = -8*rZ*Cx*V
+        dNy = -8*rY*Cx*V
         dV = Fg_in + Fn_in + Fb_in + Fm_in - Fout
         dVg = Fco_in + Fo_in - Fg_out
 
-        return dNg, dNx, dNfa, dNe, dNco, dNo, dNn, dNb, dNz, dV, dVg
+        return dNg, dNx, dNfa, dNe, dNco, dNo, dNn, dNb, dNz, dNy, dV, dVg
 
     def step(self, inputs, dt):
         """

@@ -48,7 +48,7 @@ ts = numpy.linspace(0, list(glucose['Time'])[-1], 1000)
 dt = ts[1]
 # Biomass C H_1.8 O_0.5 N_0.2 => 24.6 g/mol
 #     Ng, Nx, Nfa, Ne, Nco, No, Nn, Nb, V, Vg
-X0 = [0,  4.6/24.6,  0,   0,  0,   0,  0,  0, 0.5, 1.077, 0.1]
+X0 = [0,  4.6/24.6,  0,   0,  0,   0,  0,  0, 0.5, 0.1, 1.077, 0.1]
 
 Xs = [X0]
 m = Model()
@@ -61,7 +61,7 @@ for t in ts[1:]:
 
 Xs = numpy.array(Xs)
 
-Vs = Xs[:, 9]
+Vs = Xs[:, 10]
 Cgs = Xs[:, 0] * 180 / Vs
 Cfas = Xs[:, 2] * 116 / Vs
 Ces = Xs[:, 3] * 46 / Vs
