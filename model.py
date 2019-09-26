@@ -29,13 +29,13 @@ class Model:
         rate_matrix = numpy.array([[1, 0, 0, 0, 0],
                                    [0, 0, 0, 1, 0],
                                    [0, 0, 0, 0, 1],
-                                   [-40, 4, 7/3, 2, gamma],
+                                   [-3, 4, 7/3, 2, gamma],
                                    [0, 12, -1, 0, beta]])
-        rZ = 0.6 / 46 / 40 * 2 + 2 / 46 / 120 * 3 if Cz > 0 else 0  # decrease
-        rY = 0.6 / 46 / 25 * 3 + 0.6 / 46 / 40 if Cy > 0 else 0  # increase
+        rZ = (0.6 / 46 / 40 * 3 + 2 / 46 / 120 * 3) if Cz > 0 else 0  # decrease
+        rY = (0.6 / 46 / 25 * 3 + 0.6 / 46 / 40)*Cy*4  # increase
 
-        rFA_calc = 0.59* (Cg / (1 + Cg))
-        rE_calc = 2/46/120*3.2 + rY - rZ
+        rFA_calc = 0.59 * (Cg / (7 + Cg))
+        rE_calc = (2/46/120*3.2 + rY - rZ) * (Cg / (1e-3 + Cg))
         RHS = [rFA_calc, rE_calc, 0, theta, 0]
 
         rFAp, rTCA, rResp, rEp, rXp = numpy.linalg.inv(rate_matrix) @ RHS
