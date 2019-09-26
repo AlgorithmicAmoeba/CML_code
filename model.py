@@ -31,15 +31,14 @@ class Model:
                                    [0, 0, 0, 0, 1],
                                    [-40, 4, 7/3, 2, gamma],
                                    [0, 12, -1, 0, beta]])
-        rZ = 0.6 / 46 / 40 * 2 + 2 / 46 / 120 * 3 if t < 68 else 0  # decrease
-        rY = 0.6 / 46 / 25 * 3 + 0.6 / 46 / 40 if t < 25 else 0  # increase
+        rZ = 0.6 / 46 / 40 * 2 + 2 / 46 / 120 * 3 if Cz > 0 else 0  # decrease
+        rY = 0.6 / 46 / 25 * 3 + 0.6 / 46 / 40 if Cy > 0 else 0  # increase
 
         rFA_calc = 0.59* (Cg / (1 + Cg))
         rE_calc = 2/46/120*3.2 + rY - rZ
         RHS = [rFA_calc, rE_calc, 0, theta, 0]
 
         rFAp, rTCA, rResp, rEp, rXp = numpy.linalg.inv(rate_matrix) @ RHS
-        print(rFAp, rTCA, rResp, rEp, rXp)
 
         rG = -rFAp - rTCA - rEp - rXp
         rX = 6*rXp
