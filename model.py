@@ -29,10 +29,13 @@ class Model:
         rate_matrix = numpy.array([[1, 0, 0, 0, 0],
                                    [0, 0, 0, 1, 0],
                                    [0, 0, 0, 0, 1],
-                                   [-3, 4, 7/3, 2, gamma],
+                                   [-40, 4, 7/3, 2, gamma],
                                    [0, 12, -1, 0, beta]])
-        rFA_calc = 0.001429825802986 * (Cg / (1e-3 + Cg))
-        rE_calc = 0.001429825802986 * 0.5
+        rZ = 0.6 / 46 / 40 * 2 + 2 / 46 / 120 * 3 if t < 68 else 0  # decrease
+        rY = 0.6 / 46 / 25 * 3 + 0.6 / 46 / 40 if t < 25 else 0  # increase
+
+        rFA_calc = 0.59* (Cg / (1 + Cg))
+        rE_calc = 2/46/120*3.2 + rY - rZ
         RHS = [rFA_calc, rE_calc, 0, theta, 0]
 
         rFAp, rTCA, rResp, rEp, rXp = numpy.linalg.inv(rate_matrix) @ RHS
@@ -40,12 +43,10 @@ class Model:
 
         rG = -rFAp - rTCA - rEp - rXp
         rX = 6*rXp
-        rFA = 2*rFAp
+        rFA = 2*rFAp + 0.5*rZ
         rE = 2*rEp
         rCO = -2*rFAp + 6*rTCA + 2*rEp + alpha*rXp
         rO = -0.5*rResp
-        rZ = 1*Ce*Cz
-        rY = 1*Ce*Cy
 
         # pH calculations
         # Kna, Kfa = 10 ** (14 - 0.2), 10 ** 3.03
@@ -59,16 +60,16 @@ class Model:
         # pH = -numpy.log10(Ch)
 
         # DE's
-        dNg = Fg_in*Cg_in - Fout*Cg + 6*rG*Cx*V
+        dNg = Fg_in*Cg_in - Fout*Cg + rG*Cx*V
         dNx = rX*Cx*V
-        dNfa = -Fout*Cfa + 4*rFA*Cx*V + (116/46)*rZ*Cx*V
-        dNe = -Fout*Ce + 2*rE*Cx*V - rZ*Cx*V
+        dNfa = -Fout*Cfa + rFA*Cx*V
+        dNe = -Fout*Ce + rE*Cx*V
         dNco = Fco_in*Cco_in - Fg_out*Cco + rCO*Cx*V
         dNo = Fo_in*Co_in - Fg_out*Co - rO*Cx*V
         dNn = Fn_in*Cn_in - Fout*Cn - delta*rX*Cx*V
         dNb = Fb_in*Cb_in - Fout*Cb
-        dNz = -8*rZ*Cx*V
-        dNy = -8*rY*Cx*V
+        dNz = -190*rZ*Cx*V
+        dNy = -95*rY*Cx*V
         dV = Fg_in + Fn_in + Fb_in + Fm_in - Fout
         dVg = Fco_in + Fo_in - Fg_out
 

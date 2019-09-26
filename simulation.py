@@ -48,7 +48,7 @@ ts = numpy.linspace(0, list(glucose['Time'])[-1], 1000)
 dt = ts[1]
 # Biomass C H_1.8 O_0.5 N_0.2 => 24.6 g/mol
 #     Ng, Nx, Nfa, Ne, Nco, No, Nn, Nb, V, Vg
-X0 = [0,  4.6/24.6,  0,   0,  0,   0,  0,  0, 0.5, 0.1, 1.077, 0.1]
+X0 = [0,  4.6/24.6,  0,   0,  0,   0,  0,  0, 1.5*1.5,  0.4*2, 1.077, 0.1]
 
 Xs = [X0]
 m = Model()
@@ -66,6 +66,7 @@ Cgs = Xs[:, 0] * 180 / Vs
 Cfas = Xs[:, 2] * 116 / Vs
 Ces = Xs[:, 3] * 46 / Vs
 Czs = Xs[:, 8] / Vs
+Cys = Xs[:, 9] / Vs
 
 plt.figure(figsize=(20, 20))
 plt.subplot(2, 2, 1)
@@ -84,8 +85,10 @@ plt.plot(conc['Time'], conc['Ethanol'], '.')
 plt.title("Ethanol")
 
 plt.subplot(2, 2, 4)
-plt.plot(ts, Czs)
+plt.plot(ts, Czs, label="Z")
+plt.plot(ts, Cys, label="Y")
 plt.title("Enzyme")
+plt.legend()
 
 plt.show()
 
