@@ -20,7 +20,7 @@ def inputs(t):
     Fg_out = Fco_in + Fo_in
     Fg_out *= 0
 
-    Cn_in = 0.625 / 60  # (g/L) / (g/mol) = mol/L
+    Cn_in = 0.625*10 / 60  # (g/L) / (g/mol) = mol/L
     Fn_in = 0.625 / 1000 / Cn_in / 60  # (mg/h) / (mg/g) / (mol/L) / (g/mol) = L/h
 
     Fb_in = 0.0005  # L/h
@@ -48,7 +48,7 @@ ts = numpy.linspace(0, list(glucose['Time'])[-1], 1000)
 dt = ts[1]
 # Biomass C H_1.8 O_0.5 N_0.2 => 24.6 g/mol
 #     Ng, Nx, Nfa, Ne, Nco, No, Nn, Nb, V, Vg
-X0 = [0,  4.6/24.6,  0,   0,  0,   0,  0,  0, 4.1,  0.8*2.1, 1.077, 0.1]
+X0 = [0,  4.6/24.6,  0,   0,  0,   0,  0,  0, 5.1,  1.2, 1.077, 0.1]
 
 Xs = [X0]
 m = Model()
@@ -72,6 +72,7 @@ plt.figure(figsize=(20, 20))
 plt.subplot(2, 2, 1)
 plt.plot(ts, Cgs)
 plt.plot(conc['Time'], conc['Glucose'], '.')
+# plt.gca().twinx().plot(conc['Time'], conc['Glucose'], 'r.')
 plt.title("Glucose")
 
 plt.subplot(2, 2, 2)

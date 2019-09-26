@@ -11,7 +11,7 @@ class Model:
         Fg_in, Cg_in, Fco_in, Cco_in, Fo_in, Co_in, \
             Fg_out, Cn_in, Fn_in, Fb_in, Cb_in, Fm_in, Fout, Tamb, Q = inputs(t)
 
-        alpha, PO, gamma, theta, beta = 0.1, 1.5, 1.8, 0.0001, 0.1
+        alpha, PO, gamma, theta, beta = 0.1, 0.1, 1.8, 0.1, 0.1
         delta = 0.2
 
         # Concentrations
@@ -19,7 +19,7 @@ class Model:
         Cco, Co = [N/Vg for N in [Nco, No]]
 
         # Rate equations:
-        # 1) glucose + CO2 + 3*ATP --> 2*FA + 2*water
+        # 1) glucose + 2*CO2 + 6*ATP --> 2*FA + 2*water
         # 2) glucose --> 6*CO2 + 12*NADH + 4*ATP (TCA)
         # 3) NADH + 0.5*O2 -> 7/3 ATP (Respiration)
         # 4) glucose -> 2*ethanol + 2*CO2 + 2*ATP
@@ -29,23 +29,25 @@ class Model:
         rate_matrix = numpy.array([[1, 0, 0, 0, 0],
                                    [0, 0, 0, 1, 0],
                                    [0, 0, 0, 0, 1],
-                                   [-3, 4, 7/3, 2, gamma],
+                                   [-6, 4, 7/3, 2, -gamma],
                                    [0, 12, -1, 0, beta]])
-        rZ = (0.6 / 46 / 40 * 3 + 2 / 46 / 120 * 3) if Cz > 0 else 0  # decrease
-        rY = (0.6 / 46 / 25 * 3 + 0.6 / 46 / 40)*Cy*4  # increase
+        rZ = (0.6 / 46 / 40 * 3 + 2 / 46 / 120 * 3.2) if t < 68 else 0  # decrease
+        rY = 0.6 / 46 / 25 * 4 + 0.6 / 46 / 40*3 if t < 25 else 0  # increase
 
-        rFA_calc = 0.59 * (Cg / (7 + Cg))
-        rE_calc = (2/46/120*3.2 + rY - rZ) * (Cg / (1e-3 + Cg))
-        RHS = [rFA_calc, rE_calc, 0, theta, 0]
+        rFA_calc = 15e-3 * (Cg / (1e-2 + Cg)) - 0.5*rZ
+        rE_calc = (2/46/120*3.2 + rY) * (Cg / (1e-5 + Cg))
+        theta_calc = theta * (Cg / (1e-3 + Cg))
+        RHS = [rFA_calc, rE_calc, 8e-5, theta_calc, 0]
 
         rFAp, rTCA, rResp, rEp, rXp = numpy.linalg.inv(rate_matrix) @ RHS
 
         rG = -rFAp - rTCA - rEp - rXp
         rX = 6*rXp
-        rFA = 2*rFAp + 0.5*rZ
-        rE = 2*rEp
+        rFA = 2*(rFAp + 0.5*rZ)
+        rE = 2*(rEp - rZ) * (Cg / (1e-5 + Cg))
         rCO = -2*rFAp + 6*rTCA + 2*rEp + alpha*rXp
         rO = -0.5*rResp
+        print(rG)
 
         # pH calculations
         # Kna, Kfa = 10 ** (14 - 0.2), 10 ** 3.03
