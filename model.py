@@ -31,8 +31,8 @@ class Model:
                                    [0, 0, 0, 0, 1],
                                    [-6, 4, 7/3, 2, -gamma],
                                    [0, 12, -1, 0, beta]])
-        rZ = (0.6 / 46 / 40 * 3 + 2 / 46 / 120 * 3.2) if t < 68 else 0  # decrease
-        rY = 0.6 / 46 / 25 * 4 + 0.6 / 46 / 40*3 if t < 25 else 0  # increase
+        rZ = (0.6 / 46 / 40 * 3 + 2 / 46 / 120 * 3.2) if Cz > 0 else 0  # decrease
+        rY = 0.6 / 46 / 25 * 4 + 0.6 / 46 / 40*3 if Cy > 0 else 0  # increase
 
         rFA_calc = 15e-3 * (Cg / (1e-2 + Cg)) - 0.5*rZ
         rE_calc = (2/46/120*3.2 + rY) * (Cg / (1e-5 + Cg))
