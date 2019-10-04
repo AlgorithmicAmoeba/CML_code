@@ -31,7 +31,7 @@ class Model:
         dX : array_like
             The differential changes to the state variables
         """
-        Ng, Nx, Nfa, Ne, Nco, No, Nn, Nb, Nz, Ny, V, Vg = [max(0, N) for N in self.X]
+        Ng, Nx, Nfa, Ne, Nco, No, Nn, Na, Nb, Nz, Ny, V, Vg = [max(0, N) for N in self.X]
         Fg_in, Cg_in, Fco_in, Cco_in, Fo_in, Co_in, \
             Fg_out, Cn_in, Fn_in, Fb_in, Cb_in, Fm_in, Fout, Tamb, Q = inputs(t)
 
@@ -39,7 +39,7 @@ class Model:
         delta = 0.2
 
         # Concentrations
-        Cg, Cx, Cfa, Ce, Cn, Cb, Cz, Cy = [N/V for N in [Ng, Nx, Nfa, Ne, Nn, Nb, Nz, Ny]]
+        Cg, Cx, Cfa, Ce, Cn, Ca, Cb, Cz, Cy = [N/V for N in [Ng, Nx, Nfa, Ne, Nn, Na, Nb, Nz, Ny]]
         Cco, Co = [N/Vg for N in [Nco, No]]
 
         rate_matrix = numpy.array([[1, 0, 0, 0, 0],
@@ -87,13 +87,14 @@ class Model:
         dNco = Fco_in*Cco_in - Fg_out*Cco + rCO*Cx*V
         dNo = Fo_in*Co_in - Fg_out*Co - rO*Cx*V
         dNn = Fn_in*Cn_in - Fout*Cn - delta*rX*Cx*V
+        dNa = - Fout * Ca
         dNb = Fb_in*Cb_in - Fout*Cb
         dNz = -190*rZ*Cx*V
         dNy = -95*rY*Cx*V
         dV = Fg_in + Fn_in + Fb_in + Fm_in - Fout
         dVg = Fco_in + Fo_in - Fg_out
 
-        return dNg, dNx, dNfa, dNe, dNco, dNo, dNn, dNb, dNz, dNy, dV, dVg
+        return dNg, dNx, dNfa, dNe, dNco, dNo, dNn, dNa, dNb, dNz, dNy, dV, dVg
 
     def step(self, inputs, dt):
         """
