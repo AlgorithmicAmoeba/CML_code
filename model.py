@@ -4,7 +4,7 @@ import numpy
 
 class Model:
     def __init__(self, X0):
-        self.X = X0
+        self.X = numpy.array(X0)
         self.t = 0
 
     def DEs(self, t, inputs):
@@ -68,17 +68,6 @@ class Model:
         rO = -0.5*rResp
         print(rG)
 
-        # pH calculations
-        # Kna, Kfa = 10 ** (14 - 0.2), 10 ** 3.03
-        # Ch = Cfa_m - Coh
-        # Cfa = Cfa_m + Cfa_u
-        # Cb = Cna + Coh
-        # Kfa = Ch * Cfa_m / Cfa
-        # Kna = Cb * Ch / Cna
-        # solving in sympy gives:
-        # Ch = (Cb*Kna - numpy.sqrt(Kna*(Cb**2*Kna - 4*Cb*Cfa*Kfa + 4*Cfa*Kfa*Kna)))/(2*(Cb - Kna))
-        # pH = -numpy.log10(Ch)
-
         # DE's
         dNg = Fg_in*Cg_in - Fout*Cg + rG*Cx*V
         dNx = rX*Cx*V
@@ -114,5 +103,36 @@ class Model:
         self.t += dt
         dX = self.DEs(self.t, inputs)
         self.X += numpy.array(dX)*dt
-        return self.X
+        return self.outputs()
+
+    def calculate_pH(self):
+        """
+        Calculates the pH in the vessel.
+        Assumes that all NaOH and HCl completely ionise
+        Returns
+        -------
+        pH : float
+            The pH of the tank
+        """
+        K_fa = 10 ** 3.03
+        _, _, Nfa, _, _, _, _, Na, Nb, _, _, V, _ = self.X
+        C_fa = Nfa/V
+        C_a = Na/V
+        C_b = Nb/V
+        Ch = C_a/2 - C_b/2 - K_fa/2 + numpy.sqrt(C_a**2 - 2*C_a*C_b + 2*C_a*K_fa + C_b**2 - 2*C_b*K_fa + 4*C_fa*K_fa + K_fa**2)/2
+        pH = -numpy.log10(Ch)
+
+        return pH
+
+    def outputs(self):
+        """
+        Returns all the outputs (state and calculated)
+        Returns
+        -------
+        outputs : array_like
+            List of all the outputs from the model
+        """
+        pH = self.calculate_pH()
+        outs = numpy.append(self.X, pH)
+        return outs
 

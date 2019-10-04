@@ -49,8 +49,8 @@ dt = ts[1]
 #     Ng, Nx, Nfa, Ne, Nco, No, Nn, Nb, V, Vg
 X0 = [0, 4.6/24.6, 0, 0, 0, 0, 0, 0, 0, 5.1, 1.2, 1.077, 0.1]
 
-Xs = [X0]
 m = Model(X0)
+Xs = [m.outputs()]
 
 for t in ts[1:]:
     Xs.append(list(m.step(inputs, dt)))
@@ -68,7 +68,6 @@ plt.figure(figsize=(20, 20))
 plt.subplot(2, 2, 1)
 plt.plot(ts, Cgs)
 plt.plot(conc['Time'], conc['Glucose'], '.')
-# plt.gca().twinx().plot(conc['Time'], conc['Glucose'], 'r.')
 plt.title("Glucose")
 
 plt.subplot(2, 2, 2)
