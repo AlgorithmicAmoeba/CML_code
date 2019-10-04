@@ -116,20 +116,3 @@ class Model:
         self.X += numpy.array(dX)*dt
         return self.X
 
-    def instrument_bias_gain(self, raw_inputs):
-        """
-        Takes in the raw inputs and translates them into their
-        actual values using the gain and bias
-        Parameters
-        ----------
-        raw_inputs : array_like
-            List of raw input values
-
-        Returns
-        -------
-        inputs : array_like
-            List of actual input values
-
-        """
-        pass
-
