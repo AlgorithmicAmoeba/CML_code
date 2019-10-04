@@ -18,7 +18,6 @@ def inputs(t):
     Co_in = 21  # mol CO2 / mol total
 
     Fg_out = Fco_in + Fo_in
-    Fg_out *= 0
 
     Cn_in = 0.625*10 / 60  # (g/L) / (g/mol) = mol/L
     Fn_in = 0.625 / 1000 / Cn_in / 60  # (mg/h) / (mg/g) / (mol/L) / (g/mol) = L/h
@@ -48,16 +47,13 @@ ts = numpy.linspace(0, list(glucose['Time'])[-1], 1000)
 dt = ts[1]
 # Biomass C H_1.8 O_0.5 N_0.2 => 24.6 g/mol
 #     Ng, Nx, Nfa, Ne, Nco, No, Nn, Nb, V, Vg
-X0 = [0,  4.6/24.6,  0,   0,  0,   0,  0,  0, 5.1,  1.2, 1.077, 0.1]
+X0 = [0, 4.6/24.6, 0, 0, 0, 0, 0, 0, 5.1, 1.2, 1.077, 0.1]
 
 Xs = [X0]
-m = Model()
+m = Model(X0)
 
 for t in ts[1:]:
-    dX = numpy.array(m.DEs(Xs[-1], t, inputs))
-
-    X = numpy.array(Xs[-1]) + dX*dt
-    Xs.append(list(X))
+    Xs.append(list(m.step(inputs, dt)))
 
 Xs = numpy.array(Xs)
 

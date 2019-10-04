@@ -112,7 +112,7 @@ class Model:
         """
         self.t += dt
         dX = self.DEs(self.t, inputs)
-        self.X += dX*dt
+        self.X += numpy.array(dX)*dt
         return self.X
 
     def instrument_bias_gain(self, raw_inputs):
