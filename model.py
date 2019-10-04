@@ -3,11 +3,35 @@ import numpy
 
 
 class Model:
-    def __init__(self):
-        pass
+    def __init__(self, X0):
+        self.X = X0
+        self.t = 0
 
-    def DEs(self, X, t, inputs):
-        Ng, Nx, Nfa, Ne, Nco, No, Nn, Nb, Nz, Ny, V, Vg = [max(0, N) for N in X]
+    def DEs(self, t, inputs):
+        """
+        Contains the differential and algebraic equations for the system model.
+        The rate equations defined in the matrix `rate_matrix` are described by:
+        1) glucose + 2*CO2 + 6*ATP --> 2*FA + 2*water
+        2) glucose --> 6*CO2 + 12*NADH + 4*ATP (TCA)
+        3) NADH + 0.5*O2 -> 7/3 ATP (Respiration)
+        4) glucose -> 2*ethanol + 2*CO2 + 2*ATP
+        5) glucose + gamma*ATP --> 6*biomass + beta*NADH
+        where the unknowns are: rFAp, rTCA, rResp, rEp, rXp
+
+        Parameters
+        ----------
+        t : int
+            The current Time
+
+        inputs : array_like
+            The inputs to the system at the current time
+
+        Returns
+        -------
+        dX : array_like
+            The differential changes to the state variables
+        """
+        Ng, Nx, Nfa, Ne, Nco, No, Nn, Nb, Nz, Ny, V, Vg = [max(0, N) for N in self.X]
         Fg_in, Cg_in, Fco_in, Cco_in, Fo_in, Co_in, \
             Fg_out, Cn_in, Fn_in, Fb_in, Cb_in, Fm_in, Fout, Tamb, Q = inputs(t)
 
@@ -17,14 +41,6 @@ class Model:
         # Concentrations
         Cg, Cx, Cfa, Ce, Cn, Cb, Cz, Cy = [N/V for N in [Ng, Nx, Nfa, Ne, Nn, Nb, Nz, Ny]]
         Cco, Co = [N/Vg for N in [Nco, No]]
-
-        # Rate equations:
-        # 1) glucose + 2*CO2 + 6*ATP --> 2*FA + 2*water
-        # 2) glucose --> 6*CO2 + 12*NADH + 4*ATP (TCA)
-        # 3) NADH + 0.5*O2 -> 7/3 ATP (Respiration)
-        # 4) glucose -> 2*ethanol + 2*CO2 + 2*ATP
-        # 5) glucose + gamma*ATP --> 6*biomass + beta*NADH
-        # Unkowns: rFAp, rTCA, rResp, rEp, rXp (5)
 
         rate_matrix = numpy.array([[1, 0, 0, 0, 0],
                                    [0, 0, 0, 1, 0],
@@ -94,7 +110,10 @@ class Model:
         outputs : array_like
             List of all the outputs from the model
         """
-        pass
+        self.t += dt
+        dX = self.DEs(self.t, inputs)
+        self.X += dX*dt
+        return self.X
 
     def instrument_bias_gain(self, raw_inputs):
         """
