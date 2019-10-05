@@ -1,5 +1,6 @@
 # Contains code for the system model
 import numpy
+import scipy.optimize
 
 
 class Model:
@@ -114,12 +115,21 @@ class Model:
         pH : float
             The pH of the tank
         """
-        K_fa = 10 ** 3.03
+        K_fa, K_a, K_b = 10**(-3.03), 10**8.08, 10**(-14-0.56)
         _, _, Nfa, _, _, _, _, Na, Nb, _, _, V, _ = self.X
         C_fa = Nfa/V
         C_a = Na/V
         C_b = Nb/V
-        Ch = C_a/2 - C_b/2 - K_fa/2 + numpy.sqrt(C_a**2 - 2*C_a*C_b + 2*C_a*K_fa + C_b**2 - 2*C_b*K_fa + 4*C_fa*K_fa + K_fa**2)/2
+
+        def fun(X):
+            x, y, z = abs(X)
+            w = x + y + z  # H^+
+            eq1 = x*w/(C_fa - x) - K_fa
+            eq2 = y*w/(C_a - y) - K_a
+            eq3 = w*(C_b - z)/z - K_b
+            return eq1, eq2, eq3
+        ans = scipy.optimize.fsolve(fun, [C_fa*0.8, C_a*0.9999999, C_b*0.1])
+        Ch = sum(ans)
         pH = -numpy.log10(Ch)
 
         return pH
