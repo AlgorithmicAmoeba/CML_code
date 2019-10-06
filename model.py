@@ -67,7 +67,6 @@ class Model:
         rE = 2*(rEp - rZ) * (Cg / (1e-5 + Cg))
         rCO = -2*rFAp + 6*rTCA + 2*rEp + alpha*rXp
         rO = -0.5*rResp
-        print(rG)
 
         # DE's
         dNg = Fg_in*Cg_in - Fout*Cg + rG*Cx*V
@@ -115,22 +114,30 @@ class Model:
         pH : float
             The pH of the tank
         """
-        K_fa, K_a, K_b = 10**(-3.03), 10**8.08, 10**(-14-0.56)
+        # K_fa, K_a, K_b = 10**(-3.03), 10**8.08, 10**(-14-0.56)
+        K_fa1, K_fa2,  K_a, K_b, K_w = 10 ** (-3.03), 10 ** (4.44), 10 ** 8.08, 10 ** 0.56, 10 ** (-14)
         _, _, Nfa, _, _, _, _, Na, Nb, _, _, V, _ = self.X
         C_fa = Nfa/V
         C_a = Na/V
         C_b = Nb/V
 
-        def fun(X):
-            x, y, z = abs(X)
-            w = x + y + z  # H^+
-            eq1 = x*w/(C_fa - x) - K_fa
-            eq2 = y*w/(C_a - y) - K_a
-            eq3 = w*(C_b - z)/z - K_b
-            return eq1, eq2, eq3
-        ans = scipy.optimize.fsolve(fun, [C_fa*0.8, C_a*0.9999999, C_b*0.1])
-        Ch = sum(ans)
-        pH = -numpy.log10(Ch)
+        def charge_balance(pH):
+            Ch = 10 ** (-pH)
+            C_fa_minus = K_fa1 * C_fa / (K_fa1 + Ch)
+            C_fa_minus2 = K_fa2 * C_fa_minus / (K_fa2 + Ch)
+            C_cl_minus = K_a * C_a / (K_a + Ch)
+            C_oh_minus = K_w / Ch
+            C_na_plus = K_b * C_b / (K_b + C_oh_minus)
+
+            balance = Ch + C_na_plus - C_fa_minus - C_fa_minus2 - C_cl_minus - C_oh_minus
+            return balance
+
+        pHs = numpy.linspace(0, 14, 1e3)
+        CBs = charge_balance(pHs)
+        indx = numpy.argmin(abs(CBs))
+        pH = pHs[indx]
+        if abs(CBs[indx]) > 1e-3:
+            print(CBs[indx])
 
         return pH
 
