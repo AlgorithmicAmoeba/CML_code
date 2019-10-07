@@ -3,7 +3,7 @@ import numpy
 import matplotlib.pyplot as plt
 from model import Model
 import tqdm
-import filterpy
+import filterpy.kalman
 
 
 def inputs(t):
@@ -53,6 +53,30 @@ X0 = [0, 4.6/24.6, 0, 0, 0, 0, 0, 1e-5, 0, 5.1, 1.2, 1.077, 0.1]
 
 m = Model(X0)
 Xs = [m.outputs()]
+
+
+# State estimation
+def hx(x):
+    Ng, _, Nfa, Ne, _, _, _, _, _, _, _, V, _ = x
+    return Ng/V, Nfa/V, Ne/V
+
+
+def fx(x, dt):
+    ts = numpy.linspace(0, dt, 1000)
+    dt_small = ts[1]
+    m = Model(x)
+    for _ in ts:
+        m.step(inputs, dt_small)
+    return m.X
+
+
+nx = len(X0)
+Q = numpy.diag(numpy.full(nx, 1))
+R = numpy.diag(numpy.full(3, 0.5))
+sigmas = filterpy.kalman.JulierSigmaPoints(nx)
+ukf = filterpy.kalman.UnscentedKalmanFilter(nx, 3, 6 * 3600, hx, fx, sigmas)
+ukf.Q = Q
+ukf.R = R
 
 for ti in tqdm.tqdm(ts[1:]):
     Xs.append(list(m.step(inputs, dt)))
