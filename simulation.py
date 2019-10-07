@@ -3,6 +3,7 @@ import numpy
 import matplotlib.pyplot as plt
 from model import Model
 import tqdm
+import filterpy
 
 
 def inputs(t):
@@ -27,20 +28,20 @@ def inputs(t):
     Cb_in = 10  # mol/L
 
     Fm_in = 0
-    Fout = Fg_in + Fn_in + Fb_in + Fm_in
+    F_out = Fg_in + Fn_in + Fb_in + Fm_in
 
-    Tamb = 25
+    T_amb = 25
     Q = 5 / 9
 
-    return Fg_in, Cg_in, Fco_in, Cco_in, Fo_in, Co_in, Fg_out, Cn_in, Fn_in, Fb_in, Cb_in, Fm_in, Fout, Tamb, Q
+    return Fg_in, Cg_in, Fco_in, Cco_in, Fo_in, Co_in, Fg_out, Cn_in, Fn_in, Fb_in, Cb_in, Fm_in, F_out, T_amb, Q
 
 
 def CgFg(t):
     return numpy.interp(t, glucose['Time'], glucose['Glucose dosing (g/h)'])  # g/h
 
 
-conc = pandas.read_csv("data/run_7_conc.csv")
-glucose = pandas.read_csv("data/run_7_glucose.csv")
+concentration = pandas.read_csv("data/run_9_conc.csv")
+glucose = pandas.read_csv("data/run_9_glucose.csv")
 
 print(inputs(0))
 
@@ -53,7 +54,7 @@ X0 = [0, 4.6/24.6, 0, 0, 0, 0, 0, 1e-5, 0, 5.1, 1.2, 1.077, 0.1]
 m = Model(X0)
 Xs = [m.outputs()]
 
-for t in tqdm.tqdm(ts[1:]):
+for ti in tqdm.tqdm(ts[1:]):
     Xs.append(list(m.step(inputs, dt)))
 
 Xs = numpy.array(Xs)
@@ -69,17 +70,17 @@ pH = Xs[:, 13]
 plt.figure(figsize=(20, 20))
 plt.subplot(2, 2, 1)
 plt.plot(ts, Cgs)
-plt.plot(conc['Time'], conc['Glucose'], '.')
+plt.plot(concentration['Time'], concentration['Glucose'], '.')
 plt.title("Glucose")
 
 plt.subplot(2, 2, 2)
 plt.plot(ts, Cfas)
-plt.plot(conc['Time'], conc['Fumaric'], '.')
+plt.plot(concentration['Time'], concentration['Fumaric'], '.')
 plt.title("Fumaric")
 
 plt.subplot(2, 2, 3)
 plt.plot(ts, Ces)
-plt.plot(conc['Time'], conc['Ethanol'], '.')
+plt.plot(concentration['Time'], concentration['Ethanol'], '.')
 plt.title("Ethanol")
 
 plt.subplot(2, 2, 4)
