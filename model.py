@@ -132,11 +132,11 @@ class Model:
             balance = Ch + C_na_plus - C_fa_minus - C_fa_minus2 - C_cl_minus - C_oh_minus
             return balance
 
-        pHs = numpy.linspace(0, 14, 1e3)
+        pHs = numpy.linspace(0, 14, 1e2)
         CBs = charge_balance(pHs)
         indx = numpy.argmin(abs(CBs))
         pH = pHs[indx]
-        if abs(CBs[indx]) > 1e-3:
+        if abs(CBs[indx]) > 1e-1:
             print(CBs[indx])
 
         return pH
