@@ -1,14 +1,14 @@
 # Contains code for the system model
 import numpy
-import scipy.optimize
 
 
 class Model:
-    def __init__(self, X0, inputs, t=0):
+    def __init__(self, X0, inputs, t=0, pH_calculations=False):
         self.X = numpy.array(X0)
         self.inputs = inputs
-
         self.t = t
+        self.pH_calculations = pH_calculations
+
         self._Xs = [self.outputs()]
 
     def DEs(self, t):
@@ -142,8 +142,11 @@ class Model:
         outputs : array_like
             List of all the outputs from the model
         """
-        pH = self.calculate_pH()
-        outs = numpy.append(self.X, pH)
+        if self.pH_calculations:
+            pH = self.calculate_pH()
+            outs = numpy.append(self.X, pH)
+        else:
+            outs = self.X
         return outs
 
     def get_Xs(self):
@@ -151,4 +154,3 @@ class Model:
 
     def get_data(self):
         return self.get_Xs()
-
