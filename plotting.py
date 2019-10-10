@@ -18,8 +18,8 @@ def plot_all(file_name, confidence=0.95, show=True):
     Czs = se['Nz'] / Vs
     Cys = se['Ny'] / Vs
 
-    # Standard devioation multiplier to get the correct confidence interval
-    K = scipy.stats.norm.ppf(0.95)
+    # Standard deviation multiplier to get the correct confidence interval
+    K = scipy.stats.norm.ppf(confidence)
     # SE covs
     Pgs = se['Ng_cov'] * 180 / Vs * K
     Pfas = se['Nfa_cov'] * 116 / Vs * K
