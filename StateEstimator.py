@@ -1,7 +1,7 @@
 import numpy
 import scipy
 import filterpy.kalman
-import AdjMerweScaledSigmaPoints
+from AdjMerweScaledSigmaPoints import MerweScaledSigmaPoints
 import model
 
 
@@ -19,7 +19,7 @@ class StateEstimator:
         self.fx = self.FXObj(self.inputs)
         self.nx = len(self.Q)
 
-        self.sigmas = AdjMerweScaledSigmaPoints.MerweScaledSigmaPoints(self.nx, 1e-3, 2, 0, sqrt_method=scipy.linalg.sqrtm)
+        self.sigmas = MerweScaledSigmaPoints(self.nx, 1e-3, 2, 0, sqrt_method=scipy.linalg.sqrtm)
         self.ukf = filterpy.kalman.UnscentedKalmanFilter(self.nx, 3, 0, self.hx, self.fx, self.sigmas)
 
         self.ukf.x = X0
@@ -29,7 +29,8 @@ class StateEstimator:
         self.t_next_predict = 0
         self.t_predict = t_predict
 
-    def hx(self, x):
+    @staticmethod
+    def hx(x):
         Ng, _, Nfa, Ne, _, _, _, _, _, _, _, V, _ = x
         return Ng/V, Nfa/V, Ne/V
 
@@ -41,10 +42,10 @@ class StateEstimator:
         def __call__(self, x, dt):
             ts = numpy.linspace(0, dt, 100)
             dt_small = ts[1]
-            m_f = model.Model(x)
+            m_f = model.Model(x, self.inputs)
             m_f.t = self.t
             for _ in ts:
-                m_f.step(self.inputs, dt_small)
+                m_f.step(dt_small)
             return m_f.X
 
     def step(self, t):
