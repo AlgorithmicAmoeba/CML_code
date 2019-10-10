@@ -51,13 +51,13 @@ dt = ts[1]
 #     Ng, Nx, Nfa, Ne, Nco, No, Nn, Na, Nb, Nz, Ny, V, Vg
 X0 = [0, 4.6/24.6, 0, 0, 0, 0, 0, 1e-5, 0, 5.1, 1.2, 1.077, 0.1]
 
-m = Model(X0)
+m = Model(X0, inputs)
 Xs = [X0]
 
 
 # State estimation
 t_predict = 1
-se = StateEstimator.StateEstimator(inputs, X0, t_predict)
+se = StateEstimator.StateEstimator(X0, inputs, t_predict)
 
 ts_meas = concentration['Time']
 Cg_meas, Cfa_meas, Ce_meas = concentration['Glucose'], concentration['Fumaric'], concentration['Ethanol']
@@ -67,7 +67,7 @@ ind_next_measure = 1
 t_next_meas = ts_meas[ind_next_measure]
 
 for ti in tqdm.tqdm(ts[1:]):
-    # Xs.append(list(m.step(inputs, dt)))
+    m.step(ti)
     se.step(ti)
     if ti > t_next_meas:
         z = [Ci[ind_next_measure] for Ci in [Cg_meas/180, Cfa_meas/116, Ce_meas/46]]
