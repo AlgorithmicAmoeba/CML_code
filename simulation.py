@@ -3,22 +3,21 @@ import numpy
 import matplotlib.pyplot as plt
 from model import Model
 import StateEstimator
-import inputTypes
+import inputters
 import tqdm
 
 
-inputs = inputTypes.FakeInputs("data/run_9_glucose.csv")
+inputs = inputters.FakeInputs("data/run_9_glucose.csv")
 concentration = pandas.read_csv("data/run_9_conc.csv")
 
-# ts = numpy.linspace(0, 200, 1000)
-ts = numpy.linspace(0, 10, 10)
+ts = numpy.linspace(0, 200, 200)
+# ts = numpy.linspace(0, 30, 30)
 # Biomass C H_1.8 O_0.5 N_0.2 => 24.6 g/mol
 #     Ng, Nx, Nfa, Ne, Nco, No, Nn, Na, Nb, Nz, Ny, V, Vg
 X0 = [0, 4.6/24.6, 0, 0, 0, 0, 0, 1e-5, 0, 5.1, 1.2, 1.077, 0.1]
 
 m = Model(X0, inputs)
 Xs = [X0]
-
 
 # State estimation
 t_predict = 1
