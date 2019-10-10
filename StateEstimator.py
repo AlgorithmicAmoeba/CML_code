@@ -67,3 +67,6 @@ class StateEstimator:
 
     def get_Ps(self):
         return numpy.array(self._Ps)
+
+    def get_data(self):
+        return numpy.concatenate([self.get_Xs(), self.get_Ps()], axis=1)
