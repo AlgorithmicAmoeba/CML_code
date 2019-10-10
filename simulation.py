@@ -25,7 +25,7 @@ t_predict = 1
 se = StateEstimator.StateEstimator(X0, inputs, t_predict)
 
 for ti in tqdm.tqdm(ts[1:]):
-    # m.step(ti)
+    m.step(ti)
     se.step(ts[1])
     su.step(ts[1])
     if su.update_ready():
@@ -33,6 +33,19 @@ for ti in tqdm.tqdm(ts[1:]):
         se.update(z)
 
 Xs = se.get_Xs()
+xls = pandas.ExcelWriter('data/result.xls')
+
+model_names = ['Ng', 'Nx', 'Nfa', 'Ne', 'Nco', 'No', 'Nn', 'Na', 'Nb', 'Nz', 'Ny', 'V', 'Vg', 'pH']
+model_data = pandas.DataFrame(m.get_data(), index=ts, columns=model_names)
+model_data.index.name = 'ts'
+model_data.to_excel(xls, 'model')
+
+se_names = [name + add for add in ['', '_cov'] for name in model_names[:-1]]
+se_data = pandas.DataFrame(se.get_data(), index=ts, columns=se_names)
+se_data.index.name = 'ts'
+se_data.to_excel(xls, 'se')
+
+xls.save()
 
 Vs = Xs[:, 11]
 Cgs = Xs[:, 0] * 180 / Vs
