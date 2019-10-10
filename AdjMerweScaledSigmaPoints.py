@@ -78,7 +78,7 @@ class MerweScaledSigmaPoints(object):
     """
 
     def __init__(self, n, alpha, beta, kappa, sqrt_method=None, subtract=None):
-        #pylint: disable=too-many-arguments
+        # pylint: disable=too-many-arguments
 
         self.n = n
         self.alpha = alpha
@@ -138,7 +138,7 @@ class MerweScaledSigmaPoints(object):
         if np.isscalar(x):
             x = np.asarray([x])
 
-        if  np.isscalar(P):
+        if np.isscalar(P):
             P = np.eye(n)*P
         else:
             P = np.atleast_2d(P)
@@ -150,7 +150,7 @@ class MerweScaledSigmaPoints(object):
         sigmas[0] = x
         for k in range(n):
             # pylint: disable=bad-whitespace
-            sigmas[k+1]   = self.subtract(x, -U[k])
+            sigmas[k+1] = self.subtract(x, -U[k])
             sigmas[n+k+1] = self.subtract(x, U[k])
 
         return sigmas
