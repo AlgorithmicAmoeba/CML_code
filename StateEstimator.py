@@ -6,7 +6,7 @@ import model
 
 
 class StateEstimator:
-    def __init__(self, inputs, X0, t_predict):
+    def __init__(self, X0, inputs, t_predict):
         self.inputs = inputs
 
         self._Xs = [X0]
