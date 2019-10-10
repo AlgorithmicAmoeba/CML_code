@@ -1,9 +1,11 @@
 import pandas
 import numpy
+import scipy
 import matplotlib.pyplot as plt
 from model import Model
 import tqdm
 import filterpy.kalman
+import AdjMerweScaledSigmaPoints
 
 
 def inputs(t):
@@ -43,16 +45,17 @@ def CgFg(t):
 concentration = pandas.read_csv("data/run_9_conc.csv")
 glucose = pandas.read_csv("data/run_9_glucose.csv")
 
-print(inputs(0))
+# print(inputs(0))
 
 ts = numpy.linspace(0, list(glucose['Time'])[-1], 1000)
+# ts = numpy.linspace(0, 50, 100)
 dt = ts[1]
 # Biomass C H_1.8 O_0.5 N_0.2 => 24.6 g/mol
 #     Ng, Nx, Nfa, Ne, Nco, No, Nn, Na, Nb, Nz, Ny, V, Vg
-X0 = numpy.array([0, 4.6/24.6, 0, 0, 0, 0, 0, 1e-5, 0, 5.1, 1.2, 1.077, 0.1])
+X0 = [0, 4.6/24.6, 0, 0, 0, 0, 0, 1e-5, 0, 5.1, 1.2, 1.077, 0.1]
 
 m = Model(X0)
-Xs = [m.outputs()]
+Xs = [X0]
 
 
 # State estimation
@@ -77,10 +80,10 @@ class fx_obj:
 
 fx = fx_obj()
 nx = len(X0)
-Q = numpy.diag(numpy.array([1.e-06, 1.e-05, 1.e-05, 1.e-06, 1.e-05, 1.e-05, 1.e-05, 1.e-05,
-       1.e-05, 1.e-05, 1.e-05, 1.e-05, 1.e-05]))
-R = numpy.diag(numpy.full(3, 1e-5))
-sigmas = filterpy.kalman.MerweScaledSigmaPoints(nx, 1e-3, 2, 0)
+#                           Ng, Nx, Nfa, Ne, Nco, No, Nn, Na, Nb, Nz, Ny, V, Vg
+Q = numpy.diag(numpy.array([1e-6, 1e-3, 1e-4, 1e-1, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-2, 1e-2, 1e-5, 1e-5]))
+R = numpy.diag(numpy.array([0, 1e-7, 1e-7]))
+sigmas = AdjMerweScaledSigmaPoints.MerweScaledSigmaPoints(nx, 1e-3, 2, 0, sqrt_method=scipy.linalg.sqrtm)
 ukf = filterpy.kalman.UnscentedKalmanFilter(nx, 3, 6 * 3600, hx, fx, sigmas)
 ukf.x = X0.copy()
 ukf.Q = Q
@@ -92,15 +95,24 @@ Cg_meas, Cfa_meas, Ce_meas = concentration['Glucose'], concentration['Fumaric'],
 t_old_meas = 0
 ind_next_measure = 1
 t_next_meas = ts_meas[ind_next_measure]
-for ti in tqdm.tqdm(ts[1:]):
-    Xs.append(list(m.step(inputs, dt)))
 
+t_next_predict = 0
+t_predict = 1
+
+Ps = [[0]*13]
+for ti in tqdm.tqdm(ts[1:]):
+    # Xs.append(list(m.step(inputs, dt)))
+    if ti > t_next_predict:
+        ukf.predict(t_predict)
+        t_next_predict += t_predict
+
+    Xs.append(list(ukf.x.copy()))
+    Ps.append(list(numpy.sqrt(numpy.diag(ukf.P.copy()))))
     if ti > t_next_meas:
-        ukf.predict(t_next_meas - t_old_meas)
-        print('p', ukf.x)
         z = [Ci[ind_next_measure] for Ci in [Cg_meas/180, Cfa_meas/116, Ce_meas/46]]
+        print('before', ukf.x)
         ukf.update(z)
-        print('u', ukf.x)
+        print('after', ukf.x)
         m.X = ukf.x.copy()
 
         t_old_meas = t_next_meas
@@ -109,6 +121,7 @@ for ti in tqdm.tqdm(ts[1:]):
         fx.t = ti
 
 Xs = numpy.array(Xs)
+Ps = numpy.array(Ps)
 
 Vs = Xs[:, 11]
 Cgs = Xs[:, 0] * 180 / Vs
@@ -116,11 +129,17 @@ Cfas = Xs[:, 2] * 116 / Vs
 Ces = Xs[:, 3] * 46 / Vs
 Czs = Xs[:, 9] / Vs
 Cys = Xs[:, 10] / Vs
-pH = Xs[:, 13]
+# pH = Xs[:, 13]
+
+Pgs = Ps[:, 0] * 180 / Vs
+
+a = Cgs + Pgs
+b = Cgs - Pgs
 
 plt.figure(figsize=(20, 20))
 plt.subplot(2, 2, 1)
-plt.plot(ts, Cgs)
+plt.plot(ts, a)
+plt.plot(ts, b)
 plt.plot(ts_meas, Cg_meas, '.')
 plt.title("Glucose")
 
@@ -142,7 +161,7 @@ plt.legend()
 
 plt.show()
 
-plt.plot(ts, pH)
-plt.show()
+# plt.plot(ts, pH)
+# plt.show()
 
 
