@@ -3,8 +3,8 @@ import pandas
 
 
 class FakeInputs:
-    def __init__(self, glucode_data_file):
-        self.glucose = pandas.read_csv(glucode_data_file)
+    def __init__(self, glucose_data_file):
+        self.glucose = pandas.read_csv(glucose_data_file)
 
     def __call__(self, t):
         Cg_in = 314.19206 / 180  # (g/L) / (g/mol) = mol/L
