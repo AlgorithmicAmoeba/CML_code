@@ -36,4 +36,3 @@ class FakeInputs:
 
     def CgFg(self, t):
         return numpy.interp(t, self.glucose['Time'], self.glucose['Glucose dosing (g/h)'])  # g/h
-
