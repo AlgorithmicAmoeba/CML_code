@@ -149,3 +149,6 @@ class Model:
     def get_Xs(self):
         return numpy.array(self._Xs)
 
+    def get_data(self):
+        return self.get_Xs()
+
