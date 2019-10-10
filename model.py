@@ -130,7 +130,7 @@ class Model:
         index = numpy.argmin(abs(CBs))
         pH = pHs[index]
         if abs(CBs[index]) > 1e-1:
-            print(CBs[index])
+            print('ph CB:', CBs[index])
 
         return pH
 
