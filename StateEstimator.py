@@ -26,6 +26,7 @@ class StateEstimator:
         self.ukf.Q = self.Q
         self.ukf.R = self.R
 
+        self.t = 0
         self.t_next_predict = 0
         self.t_predict = t_predict
 
@@ -48,17 +49,18 @@ class StateEstimator:
                 m_f.step(dt_small)
             return m_f.X
 
-    def step(self, t):
-        if t > self.t_next_predict:
+    def step(self, dt):
+        self.t += dt
+        if self.t > self.t_next_predict:
             self.ukf.predict(self.t_predict)
             self.t_next_predict += self.t_predict
 
         self._Xs.append(self.ukf.x)
         self._Ps.append(numpy.sqrt(numpy.diag(self.ukf.P)))
 
-    def update(self, z, t):
+    def update(self, z):
         self.ukf.update(z)
-        self.fx.t = t
+        self.fx.t = self.t
 
     def get_Xs(self):
         return numpy.array(self._Xs)

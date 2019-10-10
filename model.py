@@ -4,11 +4,11 @@ import scipy.optimize
 
 
 class Model:
-    def __init__(self, X0, inputs):
+    def __init__(self, X0, inputs, t=0):
         self.X = numpy.array(X0)
         self.inputs = inputs
 
-        self.t = 0
+        self.t = t
         self._Xs = [X0]
 
     def DEs(self, t):
@@ -85,17 +85,16 @@ class Model:
 
         return dNg, dNx, dNfa, dNe, dNco, dNo, dNn, dNa, dNb, dNz, dNy, dV, dVg
 
-    def step(self, t):
+    def step(self, dt):
         """
         Updates the model with inputs
         Parameters
         ----------
-        t : float
-            Current time in simulation
+        dt : float
+            Time since previous step
 
         """
-        dt = self.t - t
-        self.t = t
+        self.t += dt
         dX = self.DEs(self.t)
         self.X += numpy.array(dX)*dt
         self._Xs.append(self.outputs())

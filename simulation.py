@@ -32,11 +32,11 @@ ind_next_measure = 1
 t_next_meas = ts_meas[ind_next_measure]
 
 for ti in tqdm.tqdm(ts[1:]):
-    m.step(ti)
-    se.step(ti)
+    # m.step(ti)
+    se.step(ts[1])
     if ti > t_next_meas:
         z = [Ci[ind_next_measure] for Ci in [Cg_meas/180, Cfa_meas/116, Ce_meas/46]]
-        se.update(z, ti)
+        se.update(z)
 
         t_old_meas = t_next_meas
         ind_next_measure += 1
