@@ -3,13 +3,13 @@ import pandas
 
 class FakeStateUpdate:
     def __init__(self, update_data_file, t=0):
-        concentration = pandas.read_csv(update_data_file)
+        self.concentration = pandas.read_csv(update_data_file)
         self.t = t
 
-        self.ts_meas = concentration['Time']
-        self.Cg_meas = concentration['Glucose']
-        self.Cfa_meas = concentration['Fumaric']
-        self.Ce_meas = concentration['Ethanol']
+        self.ts_meas = self.concentration['Time']
+        self.Cg_meas = self.concentration['Glucose']
+        self.Cfa_meas = self.concentration['Fumaric']
+        self.Ce_meas = self.concentration['Ethanol']
 
         self.Cis = [self.Cg_meas / 180, self.Cfa_meas / 116, self.Ce_meas / 46]
 
@@ -33,3 +33,9 @@ class FakeStateUpdate:
         self.ind_next_measure += 1
         self.t_next_meas = self.ts_meas[self.ind_next_measure]
         return z
+
+    def get_times(self):
+        return self.ts_meas
+
+    def get_data(self):
+        return self.concentration[['Glucose', 'Fumaric', 'Ethanol']]
