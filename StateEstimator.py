@@ -13,7 +13,7 @@ class StateEstimator:
         self._Ps = [[0]*len(X0)]
 
         #                           Ng, Nx, Nfa, Ne, Nco, No, Nn, Na, Nb, Nz, Ny, V, Vg
-        self.Q = numpy.diag(numpy.array([1e-4, 1e-3, 1e-5, 1e-1, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-2, 1e-2, 1e-5, 1e-5]))
+        self.Q = numpy.diag(numpy.array([1e-6, 1e-3, 1e-5, 1e-4, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-2, 1e-2, 1e-5, 1e-5]))
         self.R = numpy.diag(numpy.array([1e-12, 1e-12, 1e-12]))
 
         self.fx = self.FXObj(self.inputs)
