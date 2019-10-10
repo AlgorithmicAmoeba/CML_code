@@ -9,7 +9,7 @@ class Model:
         self.inputs = inputs
 
         self.t = t
-        self._Xs = [X0]
+        self._Xs = [self.outputs()]
 
     def DEs(self, t):
         """
