@@ -45,6 +45,11 @@ se_data = pandas.DataFrame(se.get_data(), index=ts, columns=se_names)
 se_data.index.name = 'ts'
 se_data.to_excel(xls, 'se')
 
+su_names = ['Cg', 'Cfa', 'Ce']
+su_data = pandas.DataFrame(su.get_data().values(), index=su.get_times(), columns=su_names)
+su_data.index.name = 'ts'
+su_data.to_excel(xls, 'su')
+
 xls.save()
 
 Vs = Xs[:, 11]
