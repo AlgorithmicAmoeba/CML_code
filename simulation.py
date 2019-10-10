@@ -1,11 +1,9 @@
 import pandas
 import numpy
-import scipy
 import matplotlib.pyplot as plt
 from model import Model
+import StateEstimator
 import tqdm
-import filterpy.kalman
-import AdjMerweScaledSigmaPoints
 
 
 def inputs(t):
@@ -45,10 +43,9 @@ def CgFg(t):
 concentration = pandas.read_csv("data/run_9_conc.csv")
 glucose = pandas.read_csv("data/run_9_glucose.csv")
 
-# print(inputs(0))
 
 ts = numpy.linspace(0, list(glucose['Time'])[-1], 1000)
-# ts = numpy.linspace(0, 50, 100)
+# ts = numpy.linspace(0, 10, 10)
 dt = ts[1]
 # Biomass C H_1.8 O_0.5 N_0.2 => 24.6 g/mol
 #     Ng, Nx, Nfa, Ne, Nco, No, Nn, Na, Nb, Nz, Ny, V, Vg
@@ -59,35 +56,8 @@ Xs = [X0]
 
 
 # State estimation
-def hx(x):
-    Ng, _, Nfa, Ne, _, _, _, _, _, _, _, V, _ = x
-    return Ng/V, Nfa/V, Ne/V
-
-
-class fx_obj:
-    def __init__(self, t=0):
-        self.t = t
-
-    def __call__(self, x, dt):
-        ts = numpy.linspace(0, dt, 100)
-        dt_small = ts[1]
-        m_f = Model(x)
-        m_f.t = self.t
-        for _ in ts:
-            m_f.step(inputs, dt_small)
-        return m_f.X
-
-
-fx = fx_obj()
-nx = len(X0)
-#                           Ng, Nx, Nfa, Ne, Nco, No, Nn, Na, Nb, Nz, Ny, V, Vg
-Q = numpy.diag(numpy.array([1e-6, 1e-3, 1e-4, 1e-1, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-2, 1e-2, 1e-5, 1e-5]))
-R = numpy.diag(numpy.array([0, 1e-7, 1e-7]))
-sigmas = AdjMerweScaledSigmaPoints.MerweScaledSigmaPoints(nx, 1e-3, 2, 0, sqrt_method=scipy.linalg.sqrtm)
-ukf = filterpy.kalman.UnscentedKalmanFilter(nx, 3, 6 * 3600, hx, fx, sigmas)
-ukf.x = X0.copy()
-ukf.Q = Q
-ukf.R = R
+t_predict = 1
+se = StateEstimator.StateEstimator(inputs, X0, t_predict)
 
 ts_meas = concentration['Time']
 Cg_meas, Cfa_meas, Ce_meas = concentration['Glucose'], concentration['Fumaric'], concentration['Ethanol']
@@ -96,32 +66,18 @@ t_old_meas = 0
 ind_next_measure = 1
 t_next_meas = ts_meas[ind_next_measure]
 
-t_next_predict = 0
-t_predict = 1
-
-Ps = [[0]*13]
 for ti in tqdm.tqdm(ts[1:]):
     # Xs.append(list(m.step(inputs, dt)))
-    if ti > t_next_predict:
-        ukf.predict(t_predict)
-        t_next_predict += t_predict
-
-    Xs.append(list(ukf.x.copy()))
-    Ps.append(list(numpy.sqrt(numpy.diag(ukf.P.copy()))))
+    se.step(ti)
     if ti > t_next_meas:
         z = [Ci[ind_next_measure] for Ci in [Cg_meas/180, Cfa_meas/116, Ce_meas/46]]
-        print('before', ukf.x)
-        ukf.update(z)
-        print('after', ukf.x)
-        m.X = ukf.x.copy()
+        se.update(z, ti)
 
         t_old_meas = t_next_meas
         ind_next_measure += 1
         t_next_meas = ts_meas[ind_next_measure]
-        fx.t = ti
 
-Xs = numpy.array(Xs)
-Ps = numpy.array(Ps)
+Xs = se.get_Xs()
 
 Vs = Xs[:, 11]
 Cgs = Xs[:, 0] * 180 / Vs
@@ -131,15 +87,12 @@ Czs = Xs[:, 9] / Vs
 Cys = Xs[:, 10] / Vs
 # pH = Xs[:, 13]
 
-Pgs = Ps[:, 0] * 180 / Vs
-
-a = Cgs + Pgs
-b = Cgs - Pgs
+Pgs = se.get_Ps()[:, 0] * 180 / Vs
 
 plt.figure(figsize=(20, 20))
 plt.subplot(2, 2, 1)
-plt.plot(ts, a)
-plt.plot(ts, b)
+plt.plot(ts, Cgs + Pgs)
+plt.plot(ts, Cgs - Pgs)
 plt.plot(ts_meas, Cg_meas, '.')
 plt.title("Glucose")
 
