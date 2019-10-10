@@ -114,15 +114,14 @@ class Model:
         pH : float
             The pH of the tank
         """
-        # K_fa, K_a, K_b = 10**(-3.03), 10**8.08, 10**(-14-0.56)
-        K_fa1, K_fa2,  K_a, K_b, K_w = 10 ** (-3.03), 10 ** (4.44), 10 ** 8.08, 10 ** 0.56, 10 ** (-14)
+        K_fa1, K_fa2,  K_a, K_b, K_w = 10 ** (-3.03), 10 ** 4.44, 10 ** 8.08, 10 ** 0.56, 10 ** (-14)
         _, _, Nfa, _, _, _, _, Na, Nb, _, _, V, _ = self.X
         C_fa = Nfa/V
         C_a = Na/V
         C_b = Nb/V
 
-        def charge_balance(pH):
-            Ch = 10 ** (-pH)
+        def charge_balance(pH_guess):
+            Ch = 10 ** (-pH_guess)
             C_fa_minus = K_fa1 * C_fa / (K_fa1 + Ch)
             C_fa_minus2 = K_fa2 * C_fa_minus / (K_fa2 + Ch)
             C_cl_minus = K_a * C_a / (K_a + Ch)
@@ -132,12 +131,12 @@ class Model:
             balance = Ch + C_na_plus - C_fa_minus - C_fa_minus2 - C_cl_minus - C_oh_minus
             return balance
 
-        pHs = numpy.linspace(0, 14, 1e2)
+        pHs = numpy.linspace(0, 14, 100)
         CBs = charge_balance(pHs)
-        indx = numpy.argmin(abs(CBs))
-        pH = pHs[indx]
-        if abs(CBs[indx]) > 1e-1:
-            print(CBs[indx])
+        index = numpy.argmin(abs(CBs))
+        pH = pHs[index]
+        if abs(CBs[index]) > 1e-1:
+            print(CBs[index])
 
         return pH
 
