@@ -4,11 +4,14 @@ import scipy.optimize
 
 
 class Model:
-    def __init__(self, X0):
+    def __init__(self, X0, inputs):
         self.X = numpy.array(X0)
-        self.t = 0
+        self.inputs = inputs
 
-    def DEs(self, t, inputs):
+        self.t = 0
+        self._Xs = [X0]
+
+    def DEs(self, t):
         """
         Contains the differential and algebraic equations for the system model.
         The rate equations defined in the matrix `rate_matrix` are described by:
@@ -21,11 +24,8 @@ class Model:
 
         Parameters
         ----------
-        t : int
-            The current Time
-
-        inputs : array_like
-            The inputs to the system at the current time
+        t : float
+            The current time
 
         Returns
         -------
@@ -34,7 +34,7 @@ class Model:
         """
         Ng, Nx, Nfa, Ne, Nco, No, Nn, Na, Nb, Nz, Ny, V, Vg = [max(0, N) for N in self.X]
         Fg_in, Cg_in, Fco_in, Cco_in, Fo_in, Co_in, \
-            Fg_out, Cn_in, Fn_in, Fb_in, Cb_in, Fm_in, Fout, Tamb, Q = inputs(t)
+            Fg_out, Cn_in, Fn_in, Fb_in, Cb_in, Fm_in, Fout, Tamb, Q = self.inputs(t)
 
         alpha, PO, gamma, theta, beta = 0.1, 0.1, 1.8, 0.1, 0.1
         delta = 0.2
@@ -85,25 +85,20 @@ class Model:
 
         return dNg, dNx, dNfa, dNe, dNco, dNo, dNn, dNa, dNb, dNz, dNy, dV, dVg
 
-    def step(self, inputs, dt):
+    def step(self, t):
         """
         Updates the model with inputs
         Parameters
         ----------
-        inputs : array_like
-            List of all the inputs to the model
-        dt : float
-            Amount of time since the previous step
+        t : float
+            Current time in simulation
 
-        Returns
-        -------
-        outputs : array_like
-            List of all the outputs from the model
         """
-        self.t += dt
-        dX = self.DEs(self.t, inputs)
+        dt = self.t - t
+        self.t = t
+        dX = self.DEs(self.t)
         self.X += numpy.array(dX)*dt
-        return self.outputs()
+        self._Xs.append(self.outputs())
 
     def calculate_pH(self):
         """
@@ -151,4 +146,7 @@ class Model:
         pH = self.calculate_pH()
         outs = numpy.append(self.X, pH)
         return outs
+
+    def get_Xs(self):
+        return numpy.array(self._Xs)
 
