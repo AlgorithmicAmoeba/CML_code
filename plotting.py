@@ -68,4 +68,4 @@ def plot_all(file_name, confidence=0.95, show=True):
     # plt.show()
 
 
-# plot_all('data/result.xls')
+plot_all('results/result.xls')
