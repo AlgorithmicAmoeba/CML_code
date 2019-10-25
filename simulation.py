@@ -25,7 +25,7 @@ t_predict = 1
 se = StateEstimator.StateEstimator(X0, inputs, t_predict)
 
 for ti in tqdm.tqdm(ts[1:]):
-    m.step(ti)
+    m.step(ts[1])
     se.step(ts[1])
     su.step(ts[1])
     if su.update_ready():
