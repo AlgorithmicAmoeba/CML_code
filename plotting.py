@@ -9,6 +9,15 @@ def plot_all(file_name, confidence=0.95, show=True):
     se = pandas.read_excel(xls, 'se')
     su = pandas.read_excel(xls, 'su')
 
+    # Model
+    ts_m = model['ts']
+    Vs_m = model['V']
+    Cgs_m = model['Ng'] * 180 / Vs_m
+    Cfas_m = model['Nfa'] * 116 / Vs_m
+    Ces_m = model['Ne'] * 46 / Vs_m
+    Czs_m = model['Nz'] / Vs_m
+    Cys_m = model['Ny'] / Vs_m
+
     # SE means
     ts = se['ts']
     Vs = se['V']
@@ -35,27 +44,32 @@ def plot_all(file_name, confidence=0.95, show=True):
 
     plt.figure(figsize=(20, 20))
     plt.subplot(2, 2, 1)
+    plt.plot(ts_m, Cgs_m, "--")
     plt.plot(ts, Cgs + Pgs)
     plt.plot(ts, Cgs - Pgs)
     plt.plot(ts_meas, Cg_meas, '.')
     plt.title("Glucose")
 
     plt.subplot(2, 2, 2)
+    plt.plot(ts_m, Cfas_m, "--")
     plt.plot(ts, Cfas + Pfas)
     plt.plot(ts, Cfas - Pfas)
     plt.plot(ts_meas, Cfa_meas, '.')
     plt.title("Fumaric")
 
     plt.subplot(2, 2, 3)
+    plt.plot(ts_m, Ces_m, "--")
     plt.plot(ts, Ces + Pes)
     plt.plot(ts, Ces - Pes)
     plt.plot(ts_meas, Ce_meas, '.')
     plt.title("Ethanol")
 
     plt.subplot(2, 2, 4)
+    plt.plot(ts_m, Czs_m, "--")
     plt.plot(ts, Czs + Pzs, label="Z+")
     plt.plot(ts, Czs - Pzs, label="Z-")
 
+    plt.plot(ts_m, Cys_m, "--")
     plt.plot(ts, Cys + Pys, label="Y+")
     plt.plot(ts, Cys - Pys, label="Y-")
     plt.title("Enzyme")
@@ -67,5 +81,5 @@ def plot_all(file_name, confidence=0.95, show=True):
     # plt.plot(ts, pH)
     # plt.show()
 
-
-plot_all('results/result.xls')
+if __name__ == "__main__":
+    plot_all('results/result.xls')
