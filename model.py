@@ -11,6 +11,14 @@ class Model:
 
         self._Xs = [self.outputs()]
 
+        alpha, PO, gamma, theta, beta = 0.1, 0.1, 1.8, 0.1, 0.1
+        rate_matrix = numpy.array([[1, 0, 0, 0, 0],
+                                   [0, 0, 0, 1, 0],
+                                   [0, 0, 0, 0, 1],
+                                   [-6, 4, 7/3, 2, -gamma],
+                                   [0, 12, -1, 0, beta]])
+        self.rate_matrix_inv = numpy.linalg.inv(rate_matrix)
+
     def DEs(self, t):
         """
         Contains the differential and algebraic equations for the system model.
@@ -43,11 +51,6 @@ class Model:
         Cg, Cx, Cfa, Ce, Cn, Ca, Cb, Cz, Cy = [N/V for N in [Ng, Nx, Nfa, Ne, Nn, Na, Nb, Nz, Ny]]
         Cco, Co = [N/Vg for N in [Nco, No]]
 
-        rate_matrix = numpy.array([[1, 0, 0, 0, 0],
-                                   [0, 0, 0, 1, 0],
-                                   [0, 0, 0, 0, 1],
-                                   [-6, 4, 7/3, 2, -gamma],
-                                   [0, 12, -1, 0, beta]])
         first_increase = (0.6 / 46 / 25 * 4) * Cy * 1.8
         second_increase = 2/46/120*3.2
         decrease = (0.6 / 46 / 40*3) * Cz/3
@@ -59,7 +62,7 @@ class Model:
         theta_calc = theta * (Cg / (1e-3 + Cg))
         RHS = [rFA_calc, rE_calc, 8e-5, theta_calc, 0]
 
-        rFAp, rTCA, rResp, rEp, rXp = numpy.linalg.inv(rate_matrix) @ RHS
+        rFAp, rTCA, rResp, rEp, rXp = self.rate_matrix_inv @ RHS
 
         rG = -rFAp - rTCA - rEp - rXp
         rX = 6*rXp
