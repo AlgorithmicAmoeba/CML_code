@@ -52,4 +52,4 @@ su_data.to_excel(xls, 'su')
 
 xls.save()
 
-plotting.plot_all('data/result.xls')
+plotting.plot_all('results/result.xls')
