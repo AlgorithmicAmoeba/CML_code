@@ -42,7 +42,7 @@ class StateEstimator:
             self.inputs = inputs
 
         def __call__(self, x, dt):
-            ts = numpy.linspace(0, dt, 100)
+            ts = numpy.linspace(0, dt, int(dt*5))
             dt_small = ts[1]
             m_f = model.Model(x, self.inputs)
             m_f.t = self.t
