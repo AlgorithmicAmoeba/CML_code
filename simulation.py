@@ -6,6 +6,7 @@ import inputters
 import stateUpdaters
 import tqdm
 import plotting
+import matplotlib.pyplot as plt
 
 
 inputs = inputters.FakeInputs("data/run_9_glucose.csv")
@@ -24,6 +25,12 @@ Xs = [X0]
 t_predict = 1
 se = StateEstimator.StateEstimator(X0, inputs, t_predict)
 
+live_plot = True
+
+if live_plot:
+    plt.figure(figsize=(20, 20))
+    plt.ion()
+
 for ti in tqdm.tqdm(ts[1:]):
     m.step(ts[1])
     se.step(ts[1])
@@ -31,6 +38,12 @@ for ti in tqdm.tqdm(ts[1:]):
     if su.update_ready():
         z = su.get_update()
         se.update(z)
+
+    if live_plot:
+        plotting.plot_live(ts, m, se, su)
+
+if live_plot:
+    plt.ioff()
 
 Xs = se.get_Xs()
 xls = pandas.ExcelWriter('results/result.xls')
