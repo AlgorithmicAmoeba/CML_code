@@ -32,7 +32,7 @@ class Model:
         dX : array_like
             The differential changes to the state variables
         """
-        Ng, Nx, Nfa, Ne, Nco, No, Nn, Na, Nb, Nz, Ny, V, Vg = [max(0, N) for N in self.X]
+        Ng, Nx, Nfa, Ne, Nco, No, Nn, Na, Nb, Nz, Ny, V, Vg, T = [max(0, N) for N in self.X]
         Fg_in, Cg_in, Fco_in, Cco_in, Fo_in, Co_in, \
             Fg_out, Cn_in, Fn_in, Fb_in, Cb_in, Fm_in, Fout, Tamb, Q = self.inputs(t)
 
@@ -82,8 +82,9 @@ class Model:
         dNy = -95*rY*Cx*V
         dV = Fg_in + Fn_in + Fb_in + Fm_in - Fout
         dVg = Fco_in + Fo_in - Fg_out
+        dT = 4.5*Q - 0.25*(T - Tamb)
 
-        return dNg, dNx, dNfa, dNe, dNco, dNo, dNn, dNa, dNb, dNz, dNy, dV, dVg
+        return dNg, dNx, dNfa, dNe, dNco, dNo, dNn, dNa, dNb, dNz, dNy, dV, dVg, dT
 
     def step(self, dt):
         """
@@ -109,7 +110,7 @@ class Model:
             The pH of the tank
         """
         K_fa1, K_fa2,  K_a, K_b, K_w = 10 ** (-3.03), 10 ** 4.44, 10 ** 8.08, 10 ** 0.56, 10 ** (-14)
-        _, _, Nfa, _, _, _, _, Na, Nb, _, _, V, _ = self.X
+        _, _, Nfa, _, _, _, _, Na, Nb, _, _, V, _, _ = self.X
         C_fa = Nfa/V
         C_a = Na/V
         C_b = Nb/V

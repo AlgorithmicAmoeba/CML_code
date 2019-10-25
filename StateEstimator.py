@@ -12,8 +12,9 @@ class StateEstimator:
         self._Xs = [X0]
         self._Ps = [[0]*len(X0)]
 
-        #                           Ng, Nx, Nfa, Ne, Nco, No, Nn, Na, Nb, Nz, Ny, V, Vg
-        self.Q = numpy.diag(numpy.array([1e-6, 1e-3, 1e-5, 1e-4, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-2, 1e-2, 1e-5, 1e-5]))
+        #                           Ng, Nx, Nfa, Ne, Nco, No, Nn, Na, Nb, Nz, Ny, V, Vg, T
+        self.Q = numpy.diag(numpy.array([1e-6, 1e-3, 1e-5, 1e-4, 1e-5, 1e-5, 1e-5,
+                                         1e-5, 1e-5, 1e-2, 1e-2, 1e-5, 1e-5, 1e-1]))
         self.R = numpy.diag(numpy.array([1e-12, 1e-12, 1e-12]))
 
         self.fx = self.FXObj(self.inputs)
@@ -32,7 +33,7 @@ class StateEstimator:
 
     @staticmethod
     def hx(x):
-        Ng, _, Nfa, Ne, _, _, _, _, _, _, _, V, _ = x
+        Ng, _, Nfa, Ne, _, _, _, _, _, _, _, V, _, _ = x
         return Ng/V, Nfa/V, Ne/V
 
     class FXObj:

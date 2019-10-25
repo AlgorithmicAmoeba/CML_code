@@ -15,7 +15,7 @@ ts = numpy.linspace(0, 200, 200)
 
 # Biomass C H_1.8 O_0.5 N_0.2 => 24.6 g/mol
 #     Ng, Nx, Nfa, Ne, Nco, No, Nn, Na, Nb, Nz, Ny, V, Vg
-X0 = [0, 4.6/24.6, 0, 0, 0, 0, 0, 1e-5, 0, 5.1, 1.2, 1.077, 0.1]
+X0 = [0, 4.6/24.6, 0, 0, 0, 0, 0, 1e-5, 0, 5.1, 1.2, 1.077, 0.1, 25]
 
 m = Model(X0, inputs, pH_calculations=True)
 Xs = [X0]
@@ -33,9 +33,9 @@ for ti in tqdm.tqdm(ts[1:]):
         se.update(z)
 
 Xs = se.get_Xs()
-xls = pandas.ExcelWriter('data/result.xls')
+xls = pandas.ExcelWriter('results/result.xls')
 
-model_names = ['Ng', 'Nx', 'Nfa', 'Ne', 'Nco', 'No', 'Nn', 'Na', 'Nb', 'Nz', 'Ny', 'V', 'Vg', 'pH']
+model_names = ['Ng', 'Nx', 'Nfa', 'Ne', 'Nco', 'No', 'Nn', 'Na', 'Nb', 'Nz', 'Ny', 'V', 'Vg', 'T', 'pH']
 model_data = pandas.DataFrame(m.get_data(), index=ts, columns=model_names)
 model_data.index.name = 'ts'
 model_data.to_excel(xls, 'model')
