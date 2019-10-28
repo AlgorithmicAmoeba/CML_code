@@ -25,7 +25,7 @@ Xs = [X0]
 t_predict = 1
 se = StateEstimator.StateEstimator(X0, inputs, t_predict)
 
-live_plot = True
+live_plot = False
 
 if live_plot:
     plt.figure(figsize=(20, 20))

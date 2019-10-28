@@ -1,4 +1,5 @@
 import pandas
+import numpy
 
 
 class FakeStateUpdate:
@@ -39,3 +40,32 @@ class FakeStateUpdate:
 
     def get_data(self):
         return self.concentration[['Glucose', 'Fumaric', 'Ethanol']]
+
+
+class LabviewStateUpdate:
+    def __init__(self, t=0):
+        self.t = t
+        self.ts = [t]
+        self.update = False
+        self.update_values = []
+        self.update_value = None
+
+    def step(self, dt):
+        self.t += dt
+        self.ts.append(self.t)
+
+    def update_ready(self):
+        return self.update
+
+    def get_update(self):
+        if not self.update_ready():
+            raise ValueError("Can only get update when one is avaliable")
+
+        self.update_values.append(self.update_value)
+        return self.update_value
+
+    def get_times(self):
+        return numpy.array(self.ts)
+
+    def get_data(self):
+        return numpy.array(self.update_values)
