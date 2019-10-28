@@ -93,3 +93,8 @@ class LabviewInputs:
 
         return Fg_in, Cg_in, Fco_in, Cco_in, Fo_in, Co_in, Fg_out, Cn_in, Fn_in, Fb_in, Cb_in, Fm_in, F_out, T_amb, Q
 
+    def get_data(self):
+        ts = numpy.array(self.ts)
+        inputs = numpy.array(self.inputs)
+        out = numpy.concatenate([ts, inputs])
+        return out
