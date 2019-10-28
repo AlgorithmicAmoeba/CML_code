@@ -53,6 +53,7 @@ class StateEstimator:
     def step(self, dt):
         self.t += dt
         if self.t > self.t_next_predict:
+            self.fx.t = self.t
             self.ukf.predict(self.t_predict)
             self.t_next_predict += self.t_predict
 
@@ -61,7 +62,6 @@ class StateEstimator:
 
     def update(self, z):
         self.ukf.update(z)
-        self.fx.t = self.t
 
     def get_Xs(self):
         return numpy.array(self._Xs)
