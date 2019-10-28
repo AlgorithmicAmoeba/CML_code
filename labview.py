@@ -1,4 +1,14 @@
 # Contains all functions that labview will call
+import inputters
+
+
+class Labview:
+    def __init__(self):
+        self.inputs = inputters.LabviewInputs()
+
+
+lv = Labview()
+
 
 def init():
     """
@@ -7,7 +17,8 @@ def init():
     """
     pass
 
-def finilise():
+
+def finalise():
     """
     Ends the labview interface.
     Called after the while loop in labview
@@ -15,15 +26,18 @@ def finilise():
     pass
 
 
-def set_model_inputs(inputs):
+def update_inputs(t, inputs):
     """
     Passes inputs into the system to the model.
     Parameters
     ----------
+    t : float
+        Current time
+
     inputs : array_like
         The values of the inputs
     """
-    pass
+    lv.inputs.update(t, inputs)
 
 
 def get_model_outputs():
