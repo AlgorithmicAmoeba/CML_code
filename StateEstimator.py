@@ -2,7 +2,7 @@ import numpy
 import scipy
 import filterpy.kalman
 from AdjMerweScaledSigmaPoints import MerweScaledSigmaPoints
-import model
+import Model
 
 
 class StateEstimator:
@@ -44,7 +44,7 @@ class StateEstimator:
         def __call__(self, x, dt):
             ts = numpy.linspace(0, dt, int(dt*5))
             dt_small = ts[1]
-            m_f = model.Model(x, self.inputs)
+            m_f = Model.Model(x, self.inputs)
             m_f.t = self.t
             for _ in ts:
                 m_f.step(dt_small)

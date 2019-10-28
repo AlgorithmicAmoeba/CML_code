@@ -1,11 +1,12 @@
 import matplotlib.pyplot as plt
 import pandas
 import scipy.stats
-import model
+import Model
 import StateEstimator
 import stateUpdaters
 
 
+# noinspection DuplicatedCode
 def plot_all(file_name, confidence=0.95, show=True):
     xls = pandas.ExcelFile(file_name)
     model = pandas.read_excel(xls, 'model')
@@ -97,10 +98,10 @@ def plot_all(file_name, confidence=0.95, show=True):
 
 
 def plot_live(ts,
-              model_obj: model.Model,
+              model_obj: Model.Model,
               se_obj: StateEstimator.StateEstimator,
               su_obj: stateUpdaters.FakeStateUpdate,
-              confidence=0.95, show=True):
+              confidence=0.95):
     model = model_obj.get_data()
     se = se_obj.get_data()
     su = su_obj.get_data().values

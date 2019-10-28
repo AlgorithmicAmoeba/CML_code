@@ -1,6 +1,6 @@
 import pandas
 import numpy
-from model import Model
+from Model import Model
 import StateEstimator
 import inputters
 import stateUpdaters
