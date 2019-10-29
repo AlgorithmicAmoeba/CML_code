@@ -45,15 +45,14 @@ class FakeStateUpdate:
 
 class LabviewStateUpdate:
     def __init__(self, t=0):
-        self.t = t
-        self.ts = [t]
         self.update = False
         self.update_values = []
         self.update_value = None
+        self.update_time = None
+        self.ts = []
 
     def step(self, dt):
-        self.t += dt
-        self.ts.append(self.t)
+        pass
 
     def update_ready(self):
         return self.update
@@ -62,8 +61,9 @@ class LabviewStateUpdate:
         if not self.update_ready():
             raise ValueError("Can only get update when one is avaliable")
 
+        self.ts.append(self.update_time)
         self.update_values.append(self.update_value)
-        return self.update_value
+        return self.update_time, self.update_value
 
     def get_times(self):
         return numpy.array(self.ts)
