@@ -3,9 +3,10 @@ import numpy
 
 
 class FakeStateUpdate:
-    def __init__(self, update_data_file, t=0):
+    def __init__(self, update_data_file, t=0, backdate=0):
         self.concentration = pandas.read_csv(update_data_file)
         self.t = t
+        self.backdate = backdate
 
         self.ts_meas = self.concentration['Time']
         self.Cg_meas = self.concentration['Glucose']
@@ -16,7 +17,7 @@ class FakeStateUpdate:
 
         self.t_old_meas = t
         self.ind_next_measure = 1
-        self.t_next_meas = self.ts_meas[self.ind_next_measure]
+        self.t_next_meas = self.ts_meas[self.ind_next_measure] + self.backdate
 
     def step(self, dt):
         self.t += dt
@@ -32,7 +33,7 @@ class FakeStateUpdate:
 
         self.t_old_meas = self.t_next_meas
         self.ind_next_measure += 1
-        self.t_next_meas = self.ts_meas[self.ind_next_measure]
+        self.t_next_meas = self.ts_meas[self.ind_next_measure] + self.backdate
         return z
 
     def get_times(self):

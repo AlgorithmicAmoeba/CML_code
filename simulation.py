@@ -8,9 +8,9 @@ import tqdm
 import plotting
 import matplotlib.pyplot as plt
 
-
+backdate = 10
 inputs = inputters.FakeInputs("data/run_9_glucose.csv")
-su = stateUpdaters.FakeStateUpdate("data/run_9_conc.csv")
+su = stateUpdaters.FakeStateUpdate("data/run_9_conc.csv", backdate=backdate)
 
 ts = numpy.linspace(0, 200, 200)
 
@@ -25,7 +25,7 @@ Xs = [X0]
 t_predict = 1
 se = StateEstimator.StateEstimator(X0, inputs, t_predict)
 
-live_plot = False
+live_plot = True
 
 if live_plot:
     plt.figure(figsize=(20, 20))
@@ -37,7 +37,7 @@ for ti in tqdm.tqdm(ts[1:]):
     su.step(ts[1])
     if su.update_ready():
         z = su.get_update()
-        se.update(z)
+        se.update(z, ti-backdate if backdate else numpy.nan)
 
     if live_plot:
         plotting.plot_live(ts, m, se, su)
