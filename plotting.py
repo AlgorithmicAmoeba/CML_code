@@ -176,7 +176,6 @@ def plot_live(ts,
     plt.plot(ts, Czs - Pzs, label="Z-")
 
     plt.plot(ts_m, Cys_m, "--")
-    plt.cla()
     plt.plot(ts, Cys + Pys, label="Y+")
     plt.plot(ts, Cys - Pys, label="Y-")
     plt.title("Enzyme")
