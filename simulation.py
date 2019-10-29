@@ -8,7 +8,7 @@ import tqdm
 import plotting
 import matplotlib.pyplot as plt
 
-backdate = 10
+backdate = 0
 inputs = inputters.FakeInputs("data/run_9_glucose.csv")
 su = stateUpdaters.FakeStateUpdate("data/run_9_conc.csv", backdate=backdate)
 
@@ -25,7 +25,7 @@ Xs = [X0]
 t_predict = 1
 se = StateEstimator.StateEstimator(X0, inputs, t_predict)
 
-live_plot = True
+live_plot = False
 
 if live_plot:
     plt.figure(figsize=(20, 20))
@@ -46,7 +46,7 @@ if live_plot:
     plt.ioff()
 
 Xs = se.get_Xs()
-xls = pandas.ExcelWriter('results/result.xls')
+xls = pandas.ExcelWriter('results/result.xlsx', engine='xlsxwriter')
 
 model_names = ['Ng', 'Nx', 'Nfa', 'Ne', 'Nco', 'No', 'Nn', 'Na', 'Nb', 'Nz', 'Ny', 'V', 'Vg', 'T', 'pH']
 model_data = pandas.DataFrame(m.get_data(), index=ts, columns=model_names)
@@ -65,4 +65,4 @@ su_data.to_excel(xls, 'su')
 
 xls.save()
 
-plotting.plot_all('results/result.xls')
+plotting.plot_all('results/result.xlsx')
