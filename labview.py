@@ -19,7 +19,7 @@ class Labview:
         self.Xs = [self.X0]
 
         # State estimation
-        self.t_predict = 1
+        self.t_predict = 0.9/3600
         self.se = StateEstimator.StateEstimator(self.X0, self.inputs, self.t_predict)
 
 

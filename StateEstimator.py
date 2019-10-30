@@ -46,7 +46,7 @@ class StateEstimator:
             self.inputs = inputs
 
         def __call__(self, x, dt):
-            ts = numpy.linspace(0, dt, int(dt*5))
+            ts = numpy.linspace(0, dt, int(dt*5 + 2))
             dt_small = ts[1]
             m_f = Model.Model(x, self.inputs)
             m_f.t = self.t
@@ -59,8 +59,8 @@ class StateEstimator:
 
         if self.t > self.t_next_predict:
             self.fx.t = self.t
-            self.ukf.predict(self.t_predict)
-            self.t_next_predict += self.t_predict
+            self.ukf.predict(self.t)
+            self.t_next_predict = self.t + self.t_predict
 
         self._Xs.append(self.ukf.x)
         self._Ps.append(self.ukf.P)

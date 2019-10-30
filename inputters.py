@@ -64,7 +64,7 @@ class LabviewInputs:
         self.inputs.append(data)
 
     def __call__(self, t):
-        index = numpy.searchsorted(self.ts, t)
+        index = min(numpy.searchsorted(self.ts, t), len(self.ts)-1)
         CO2_ml_min, O2_ml_min, _, B_rpm, _, M_rpm, G_rpm, N_rpm, B_on_off, Q_on_off = self.inputs[index]
         Cg_in = self.Cg_in
         Fg_in = G_rpm * self.G_rpm_to_ml_min / 1000 * 60  # (ml/min) / (L/ml) * (min/h) = L/h
