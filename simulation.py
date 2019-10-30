@@ -59,7 +59,7 @@ se_data.index.name = 'ts'
 se_data.to_excel(xls, 'se')
 
 su_names = ['Cg', 'Cfa', 'Ce']
-su_data = pandas.DataFrame(su.get_data().values, index=su.get_times(), columns=su_names)
+su_data = pandas.DataFrame(su.get_data(), index=su.get_times(), columns=su_names)
 su_data.index.name = 'ts'
 su_data.to_excel(xls, 'su')
 

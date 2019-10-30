@@ -100,11 +100,11 @@ def plot_all(file_name, confidence=0.95, show=True):
 def plot_live(ts,
               model_obj: Model.Model,
               se_obj: StateEstimator.StateEstimator,
-              su_obj: stateUpdaters.FakeStateUpdate,
+              su_obj: {stateUpdaters.FakeStateUpdate, stateUpdaters.LabviewStateUpdate},
               confidence=0.95):
     model = model_obj.get_data()
     se = se_obj.get_data()
-    su = su_obj.get_data().values
+    su = su_obj.get_data()
 
     # Model
     # 'ts', 'Ng', 'Nx', 'Nfa', 'Ne', 'Nco', 'No', 'Nn', 'Na', 'Nb', 'Nz', 'Ny', 'V', 'Vg', 'T', 'pH'

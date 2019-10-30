@@ -40,16 +40,16 @@ class FakeStateUpdate:
         return self.ts_meas
 
     def get_data(self):
-        return self.concentration[['Glucose', 'Fumaric', 'Ethanol']]
+        return self.concentration[['Glucose', 'Fumaric', 'Ethanol']].values
 
 
 class LabviewStateUpdate:
     def __init__(self, t=0):
         self.update = False
-        self.update_values = []
+        self.update_values = [[0]*3]
         self.update_value = None
         self.update_time = None
-        self.ts = []
+        self.ts = [0]
 
     def step(self, dt):
         pass

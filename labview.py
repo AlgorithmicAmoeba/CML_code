@@ -4,6 +4,8 @@ import stateUpdaters
 import Model
 import StateEstimator
 import scipy.stats
+import matplotlib.pyplot as plt
+import plotting
 
 
 class Labview:
@@ -22,8 +24,15 @@ class Labview:
         self.t_predict = 0.9/3600
         self.se = StateEstimator.StateEstimator(self.X0, self.inputs, self.t_predict)
 
+        # Plotting
+        self.live_plot = True
+
 
 lv = Labview()
+
+if lv.live_plot:
+    plt.figure(figsize=(20, 20))
+    plt.ion()
 
 
 def init():
@@ -65,6 +74,9 @@ def step(t):
     if lv.su.update_ready():
         t_u, z = lv.su.get_update()
         lv.se.update(z, t-t_u)
+        
+    if lv.live_plot:
+        plotting.plot_live(lv.ts, lv.m, lv.se, lv.su)
 
 
 def update_state(t, z):
