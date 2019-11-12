@@ -59,7 +59,7 @@ class StateEstimator:
 
         if self.t > self.t_next_predict:
             self.fx.t = self.t
-            self.ukf.predict(self.t)
+            self.ukf.predict(self.t_predict)
             self.t_next_predict = self.t + self.t_predict
 
         self._Xs.append(self.ukf.x)
