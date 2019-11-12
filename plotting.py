@@ -196,5 +196,33 @@ def plot_live(ts,
     plt.pause(0.001)
 
 
+def plot_data(file_name, show=True):
+    xls = pandas.ExcelFile(file_name)
+    su = pandas.read_excel(xls, 'su')
+
+    # Measured update values
+    ts_meas = su['ts']
+    Cg_meas = su['Cg']
+    Cfa_meas = su['Cfa']
+    Ce_meas = su['Ce']
+
+    plt.figure(figsize=(10, 2))
+    plt.subplot(1, 3, 1)
+    plt.plot(ts_meas, Cg_meas, '.')
+    plt.title("Glucose")
+
+    plt.subplot(1, 3, 2)
+    plt.plot(ts_meas, Cfa_meas, '.')
+    plt.title("Fumaric")
+
+    plt.subplot(1, 3, 3)
+    plt.plot(ts_meas, Ce_meas, '.')
+    plt.title("Ethanol")
+
+    plt.savefig("results/data7.pdf")
+    if show:
+        plt.show()
+
+
 if __name__ == "__main__":
     plot_all('results/result.xls')
