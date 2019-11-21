@@ -57,18 +57,18 @@ class Model:
         rZ = decrease + second_increase if Cz > 0 else 0  # decrease
         rY = first_increase + decrease if Cy > 0 else 0  # increase
 
-        rFA_calc = 15e-3 * (Cg / (1e-2 + Cg)) - 0.5*rZ
-        rE_calc = (second_increase + rY) * (Cg / (1e-5 + Cg))
+        rFAf = 15e-3 * (Cg / (1e-2 + Cg)) - 0.5 * rZ
+        rEf = (second_increase + rY) * (Cg / (1e-5 + Cg))
         theta_calc = theta * (Cg / (1e-3 + Cg))
-        RHS = [rFA_calc, rE_calc, 8e-5, theta_calc, 0]
+        RHS = [rFAf, rEf, 8e-5, theta_calc, 0]
 
-        rFAp, rTCA, rResp, rEp, rXp = self.rate_matrix_inv @ RHS
+        rFAf, rTCA, rResp, rEf, rbio = self.rate_matrix_inv @ RHS
 
-        rG = -rFAp - rTCA - rEp - rXp
-        rX = 6*rXp
-        rFA = 2*(rFAp + 0.5*rZ)
-        rE = 2*(rEp - rZ) * (Cg / (1e-5 + Cg))
-        rCO = -2*rFAp + 6*rTCA + 2*rEp + alpha*rXp
+        rG = -rFAf - rTCA - rEf - rbio
+        rX = 6 * rbio
+        rFA = 2*(rFAf + 0.5 * rZ)
+        rE = 2 * (rEf - rZ) * (Cg / (1e-5 + Cg))
+        rCO = -2 * rFAf + 6 * rTCA + 2 * rEf + alpha * rbio
         rO = -0.5*rResp
 
         # DE's
