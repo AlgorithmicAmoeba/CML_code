@@ -159,6 +159,7 @@ def plot_live(ts,
     plt.plot(ts, Cgs - Pgs)
     plt.plot(ts_meas, Cg_meas, '.')
     plt.title("Glucose")
+    plt.xlim(xmin=0.01)
 
     plt.subplot(3, 2, 2)
     plt.cla()
@@ -167,6 +168,7 @@ def plot_live(ts,
     plt.plot(ts, Cfas - Pfas)
     plt.plot(ts_meas, Cfa_meas, '.')
     plt.title("Fumaric")
+    plt.xlim(xmin=0.01)
 
     plt.subplot(3, 2, 3)
     plt.cla()
@@ -175,18 +177,21 @@ def plot_live(ts,
     plt.plot(ts, Ces - Pes)
     plt.plot(ts_meas, Ce_meas, '.')
     plt.title("Ethanol")
+    plt.xlim(xmin=0.01)
 
     plt.subplot(3, 2, 4)
     plt.cla()
     plt.plot(ts_m, Czs_m, "--")
     plt.plot(ts, Czs + Pzs, label="Z+")
     plt.plot(ts, Czs - Pzs, label="Z-")
+    plt.xlim(xmin=0.01)
 
     plt.plot(ts_m, Cys_m, "--")
     plt.plot(ts, Cys + Pys, label="Y+")
     plt.plot(ts, Cys - Pys, label="Y-")
     plt.title("Enzyme")
     plt.legend()
+    plt.xlim(xmin=0.01)
 
     plt.subplot(3, 2, 5)
     plt.cla()
@@ -194,11 +199,13 @@ def plot_live(ts,
     plt.plot(ts, Ts + PTs)
     plt.plot(ts, Ts - PTs)
     plt.title("Temperature")
+    plt.xlim(xmin=0.01)
 
     plt.subplot(3, 2, 6)
     plt.cla()
     plt.plot(ts_m, pH_m)
     plt.title("pH")
+    plt.xlim(xmin=0.01)
 
     plt.pause(0.001)
 
