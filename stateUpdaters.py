@@ -32,8 +32,9 @@ class FakeStateUpdate:
         z = [Ci[self.ind_next_measure] for Ci in self.Cis]
 
         self.t_old_meas = self.t_next_meas
-        self.ind_next_measure += 1
-        self.t_next_meas = self.ts_meas[self.ind_next_measure] + self.backdate
+        if self.ind_next_measure + 1 < len(self.ts_meas):
+            self.ind_next_measure += 1
+            self.t_next_meas = self.ts_meas[self.ind_next_measure] + self.backdate
         return z
 
     def get_times(self):
