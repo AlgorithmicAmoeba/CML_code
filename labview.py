@@ -67,6 +67,7 @@ def update_inputs(t, inputs):
 
 def step(t):
     dt = t - lv.t
+    lv.t = t
     lv.ts.append(t)
     lv.m.step(dt)
     lv.se.step(dt)
