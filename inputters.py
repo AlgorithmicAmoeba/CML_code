@@ -65,7 +65,7 @@ class LabviewInputs:
 
     def __call__(self, t):
         offsets = [0.004422699015892, 0.004053967439397, 0.004, 0.004, 0.004, 0.004, 0.004, 0.004, 0.004, 0.004]
-        spans = [0.004717700792543, 9.925512172352e-5, 4e-5, 0.000542, 4e-5, 0.00032, 0.00064, 0.0008]
+        spans = [0.0004717700792543, 9.925512172352e-5, 4e-5, 0.000542, 4e-5, 0.00032, 0.00064, 0.0008]
 
         index = min(numpy.searchsorted(self.ts, t), len(self.ts)-1)
         ins = [(in_i - offset)/span for in_i, offset, span in zip(self.inputs[index], offsets, spans)]
