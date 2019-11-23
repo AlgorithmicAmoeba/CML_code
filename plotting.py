@@ -109,8 +109,11 @@ def plot_live(ts,
               se_obj: StateEstimator.StateEstimator,
               su_obj: {stateUpdaters.FakeStateUpdate, stateUpdaters.LabviewStateUpdate},
               confidence=0.95):
-    model = model_obj.get_data()[1:]
-    se = se_obj.get_data()[1:]
+    model = model_obj.get_data()
+    se = se_obj.get_data()
+    if model.shape[0] > 3:
+        model = model[3:]
+        se = se[3:]
     su = su_obj.get_data()
 
     # Model
