@@ -64,8 +64,13 @@ class LabviewInputs:
         self.inputs.append(data)
 
     def __call__(self, t):
+        offsets = [0.004422699015892, 0.004053967439397, 0.004, 0.004, 0.004, 0.004, 0.004, 0.004, 0.004, 0.004]
+        spans = [0.004717700792543, 9.925512172352e-5, 4e-5, 0.000542, 4e-5, 0.00032, 0.00064, 0.0008]
+
         index = min(numpy.searchsorted(self.ts, t), len(self.ts)-1)
-        CO2_ml_min, O2_ml_min, _, B_rpm, _, M_rpm, G_rpm, N_rpm, B_on_off, Q_on_off = self.inputs[index]
+        ins = [(in_i - offset)/span for in_i, offset, span in zip(self.inputs[index], offsets, spans)]
+        CO2_ml_min, O2_ml_min, _, B_rpm, _, M_rpm, G_rpm, N_rpm, B_on_off, Q_on_off = ins
+
         Cg_in = self.Cg_in
         Fg_in = G_rpm * self.G_rpm_to_ml_min / 1000 * 60  # (ml/min) / (L/ml) * (min/h) = L/h
 
