@@ -115,6 +115,7 @@ def step(t):
     if lv.su.update_ready():
         t_u, z = lv.su.get_update()
         lv.se.update(z, t-t_u)
+        lv.su.update = False
         
     if lv.live_plot:
         plotting.plot_live(lv.ts, lv.m, lv.se, lv.su)
