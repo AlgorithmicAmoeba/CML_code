@@ -81,7 +81,7 @@ def step(t):
 
 def update_state(t, z):
     lv.su.update = True
-    lv.su.update_value = z
+    lv.su.update_value = [zi/n for zi, n in zip(z, [180, 116, 46])]
     lv.su.update_time = t
 
 
