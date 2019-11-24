@@ -33,6 +33,7 @@ The source code is available `here <https://github.com/darren-roos/CML_code>`_.
    StateEstimator
    FakeInputs
    LabviewInputs
+   labview
 
 
 .. Delete this line until the * to generate index for your project: * :ref:`genindex`
