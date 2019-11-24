@@ -63,7 +63,7 @@ class LabviewStateUpdate:
             raise ValueError("Can only get update when one is avaliable")
 
         self.ts.append(self.update_time)
-        self.update_values.append(self.update_value)
+        self.update_values.append([zi*n for zi, n in zip(self.update_value, [180, 116, 46])])
         return self.update_time, self.update_value
 
     def get_times(self):
