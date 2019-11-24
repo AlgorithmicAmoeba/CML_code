@@ -35,6 +35,7 @@ The source code is available `here <https://github.com/darren-roos/CML_code>`_.
    labview
    FakeInputs
    LabviewInputs
+   plotting
 
 
 .. Delete this line until the * to generate index for your project: * :ref:`genindex`

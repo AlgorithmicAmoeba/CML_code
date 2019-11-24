@@ -8,6 +8,22 @@ import stateUpdaters
 
 # noinspection DuplicatedCode
 def plot_all(file_name, confidence=0.95, show=True):
+    """Plots all the graphs from a file
+
+    Parameters
+    ----------
+    file_name : string
+        The name of the file in which all the data is stored
+
+    confidence : float, optional
+        The confidence probability for the plots
+        Defaults to 95%
+
+    show : bool, optional
+        If `True` then the plt.show method is called at the end.
+        Useful to turn off when you want to add additional things
+        Defaults to `True`
+    """
     xls = pandas.ExcelFile(file_name)
     model = pandas.read_excel(xls, 'model')
     se = pandas.read_excel(xls, 'se')
@@ -109,6 +125,25 @@ def plot_live(ts,
               se_obj: StateEstimator.StateEstimator,
               su_obj: {stateUpdaters.FakeStateUpdate, stateUpdaters.LabviewStateUpdate},
               confidence=0.95):
+    """
+    Parameters
+    ----------
+    ts : array_like
+        List of times
+
+    model_obj : Model.Model
+        Model object
+
+    se_obj : StateEstimator.StateEstimator
+        State estimation object
+
+    su_obj : {stateUpdaters.FakeStateUpdate,  stateUpdaters.LabviewStateUpdate}
+        State updating object
+
+    confidence : float, optional
+        The confidence probability for the plots
+        Defaults to 95%
+    """
     model = model_obj.get_data()
     se = se_obj.get_data()
     if model.shape[0] > 3:
@@ -207,6 +242,18 @@ def plot_live(ts,
 
 
 def plot_data(file_name, show=True):
+    """Plots state update data from a file
+
+    Parameters
+    ----------
+    file_name : string
+        The name of the file in which all the data is stored
+
+    show : bool, optional
+        If `True` then the plt.show method is called at the end.
+        Useful to turn off when you want to add additional things
+        Defaults to `True`
+    """
     xls = pandas.ExcelFile(file_name)
     su = pandas.read_excel(xls, 'su')
 
@@ -236,6 +283,18 @@ def plot_data(file_name, show=True):
 
 # noinspection DuplicatedCode
 def plot_model(file_name,  show=True):
+    """Plots state update data and model data from a file
+
+    Parameters
+    ----------
+    file_name : string
+        The name of the file in which all the data is stored
+
+    show : bool, optional
+        If `True` then the plt.show method is called at the end.
+        Useful to turn off when you want to add additional things
+        Defaults to `True`
+    """
     xls = pandas.ExcelFile(file_name)
     model = pandas.read_excel(xls, 'model')
     se = pandas.read_excel(xls, 'se')
