@@ -6,6 +6,58 @@ import Model
 
 
 class StateEstimator:
+    """Implements the UKF state estimator for the system
+
+    Parameters
+     ----------
+    X0 : array_like
+        The initial states of the system
+
+    inputs : callable
+        Must take in a parameter t (the current time) and return an array_like of the current inputs
+
+    t_predict : float
+        The period between state estimator predictions
+
+    Attributes
+    -----------
+    inputs : callable
+        Must take in a parameter t (the current time) and return an array_like of the current inputs
+
+    ts : array_like
+        List of times that the state estimator has been run
+
+    Q : 2d array
+        A matrix of state covariances
+
+    R : 2d array
+        A matrix of measurement covariances
+
+    fx : callable
+        A function that can be used for state transition
+
+    nx : int
+        The number of states
+
+    sigmas : MerweScaledSigmaPoints
+        A sigma point generating object
+
+    ukf : filterpy.kalman.UnscentedKalmanFilter
+        A UKF implementation
+
+    t : float
+        The current time
+
+    t_next_predict : float
+        The next time at which prediction should take place
+
+    t_predict : float
+        The period between state estimator predictions
+
+    t_next_predicts : array_like
+        An array of all past prediction times
+
+    """
     def __init__(self, X0, inputs, t_predict):
         self.inputs = inputs
 
@@ -37,8 +89,21 @@ class StateEstimator:
 
     @staticmethod
     def hx(x):
+        """
+        Parameters
+        ----------
+        x : array_like
+            A list of the states
+
+        Returns
+        -------
+        z : array_like
+            A list of the observations in measurement space
+
+        """
         Ng, _, Nfa, Ne, _, _, _, _, _, _, _, V, _, _ = x
-        return Ng/V, Nfa/V, Ne/V
+        z = Ng/V, Nfa/V, Ne/V
+        return z
 
     class FXObj:
         def __init__(self, inputs, t=0):
@@ -55,6 +120,13 @@ class StateEstimator:
             return m_f.X
 
     def step(self, dt):
+        """Steps the object through time
+
+        Parameters
+        ----------
+        dt : float
+            The amount of time since the previous call
+        """
         self.t += dt
 
         if self.t > self.t_next_predict:
@@ -70,6 +142,16 @@ class StateEstimator:
         self.t_next_predicts.append(self.t_next_predict)
 
     def update(self, z, t=numpy.nan):
+        """ Performs an update step
+
+        Parameters
+        ----------
+        z : array_like
+            A list of the observations
+
+        t : float
+            The time at which the observations took place
+        """
         if t is numpy.nan:
             self.ukf.update(z)
         else:
@@ -99,10 +181,15 @@ class StateEstimator:
                 self.step(t_i - self.t)
 
     def get_Xs(self):
+        """Get the _Xs array
+        """
         return numpy.array(self._Xs)
 
     def get_deviations(self):
+        """Get the _deviations array
+        """
         return numpy.array(self._deviations)
 
     def get_data(self):
+        """Get all the data from the object"""
         return numpy.concatenate([self.get_Xs(), self.get_deviations()], axis=1)
