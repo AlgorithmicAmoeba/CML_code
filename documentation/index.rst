@@ -31,6 +31,8 @@ The source code is available `here <https://github.com/darren-roos/CML_code>`_.
    :name: mastertoc
 
    StateEstimator
+   FakeInputs
+   LabviewInputs
 
 
 .. Delete this line until the * to generate index for your project: * :ref:`genindex`
