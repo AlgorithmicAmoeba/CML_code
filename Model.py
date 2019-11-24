@@ -3,6 +3,42 @@ import numpy
 
 
 class Model:
+    """A nonlinear model of the system
+
+    Parameters
+    ----------
+    X0 : array_like
+        Initial states
+
+    inputs : callable
+        Must take in a parameter t (the current time) and return an array_like of the current inputs
+
+    t : float, optional
+        Initial time.
+        Defaults to zero
+
+    pH_calculations : bool, optional
+        If `True` then pH calculations are made.
+        Defaults to `False`
+
+    Attributes
+    -----------
+    X : array_like
+        Array of current state
+
+    inputs : callable
+        Must take in a parameter t (the current time) and return an array_like of the current inputs
+
+    t : float
+        Initial time
+
+    pH_calculations : bool
+        If `True` then pH calculations are made
+
+    rate_matrix_inv : 2d array_like
+        The inverse of the rate matrix.
+        Placed here so that it is only calculated once
+    """
     def __init__(self, X0, inputs, t=0, pH_calculations=False):
         self.X = numpy.array(X0)
         self.inputs = inputs
@@ -20,14 +56,14 @@ class Model:
         self.rate_matrix_inv = numpy.linalg.inv(rate_matrix)
 
     def DEs(self, t):
-        """
-        Contains the differential and algebraic equations for the system model.
-        The rate equations defined in the matrix `rate_matrix` are described by:
+        """Contains the differential and algebraic equations for the system model.
+        The rate equations defined in the matrix `rate_matrix` are described by: \n
         1) glucose + 2*CO2 + 6*ATP --> 2*FA + 2*water
         2) glucose --> 6*CO2 + 12*NADH + 4*ATP (TCA)
         3) NADH + 0.5*O2 -> 7/3 ATP (Respiration)
         4) glucose -> 2*ethanol + 2*CO2 + 2*ATP
         5) glucose + gamma*ATP --> 6*biomass + beta*NADH
+
         where the unknowns are: rFAp, rTCA, rResp, rEp, rXp
 
         Parameters
@@ -90,8 +126,8 @@ class Model:
         return dNg, dNx, dNfa, dNe, dNco, dNo, dNn, dNa, dNb, dNz, dNy, dV, dVg, dT
 
     def step(self, dt):
-        """
-        Updates the model with inputs
+        """Updates the model with inputs
+
         Parameters
         ----------
         dt : float
@@ -104,9 +140,8 @@ class Model:
         self._Xs.append(self.outputs())
 
     def calculate_pH(self):
-        """
-        Calculates the pH in the vessel.
-        Assumes that all NaOH and HCl completely ionise
+        """Calculates the pH in the vessel.
+
         Returns
         -------
         pH : float
@@ -139,8 +174,8 @@ class Model:
         return pH
 
     def outputs(self):
-        """
-        Returns all the outputs (state and calculated)
+        """Returns all the outputs (state and calculated)
+
         Returns
         -------
         outputs : array_like
@@ -154,7 +189,9 @@ class Model:
         return outs
 
     def get_Xs(self):
+        """Gets all the states that are stored"""
         return numpy.array(self._Xs)
 
     def get_data(self):
+        """Gets all relevant information from the object """
         return self.get_Xs()
