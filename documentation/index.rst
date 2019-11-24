@@ -35,6 +35,8 @@ The source code is available `here <https://github.com/darren-roos/CML_code>`_.
    labview
    FakeInputs
    LabviewInputs
+   FakeStateUpdate
+   LabviewStateUpdate
    plotting
 
 
