@@ -66,9 +66,9 @@ class StateEstimator:
         self._deviations = [[0] * len(X0)]
         self.ts = [0]
 
-        #                           Ng, Nx, Nfa, Ne, Nco, No, Nn, Na, Nb, Nz, Ny, V, Vg, T
+        #                           Ng, Nx, Nfa, Ne, Nco, No, Nn, Na, Nb, Nez, Nfaz, Nezfa, V, Vg, T
         self.Q = numpy.diag(numpy.array([1e-6, 1e-3, 1e-5, 1e-4, 1e-5, 1e-5, 1e-5,
-                                         1e-5, 1e-5, 1e-2, 1e-2, 1e-5, 1e-5, 1e-1]))
+                                         1e-5, 1e-5, 1e-2, 1e-2, 1e-2, 1e-5, 1e-5, 1e-1]))
         self.R = numpy.diag(numpy.array([1e-12, 1e-12, 1e-12]))
 
         self.fx = self.FXObj(self.inputs)
@@ -101,7 +101,7 @@ class StateEstimator:
             A list of the observations in measurement space
 
         """
-        Ng, _, Nfa, Ne, _, _, _, _, _, _, _, V, _, _ = x
+        Ng, _, Nfa, Ne, _, _, _, _, _, _, _, _, V, _, _ = x
         z = Ng/V, Nfa/V, Ne/V
         return z
 
